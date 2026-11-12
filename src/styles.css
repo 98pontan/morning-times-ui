@@ -193,3 +193,4 @@ input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--rule); 
 .region-grid input { margin-top: 4px; }
 .region-grid small { display: block; color: var(--muted); }
 .row-form input { min-width: 160px; flex: 1; }
+.threshold-form input { min-width: 0; width: 120px; flex: none; }

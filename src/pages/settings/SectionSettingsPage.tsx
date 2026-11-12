@@ -145,6 +145,7 @@ function WatchItemsPanel({ section }: { section: Section }) {
   const kinds = useSectionKinds();
   const { create, update, remove } = useWatchItemMutations(section.id);
   const types = kinds.data?.find((k) => k.kind === section.kind)?.item_types ?? ["keyword"];
+  const hasStocks = section.kind === "economy";
 
   return (
     <section className="panel">
@@ -161,6 +162,7 @@ function WatchItemsPanel({ section }: { section: Section }) {
             <th>Namn</th>
             <th>Typ</th>
             <th>Nyckelord</th>
+            {hasStocks && <th>Larm vid ±%</th>}
             <th>Aktiv</th>
             <th />
           </tr>
@@ -170,6 +172,8 @@ function WatchItemsPanel({ section }: { section: Section }) {
             <WatchItemRow
               key={item.id}
               item={item}
+              showThreshold={hasStocks}
+              defaultThreshold={Number(section.settings.move_threshold_pct ?? 5)}
               onSave={(body) => update.mutate({ id: item.id, body })}
               onDelete={() => confirm(`Sluta följa ${item.name}?`) && remove.mutate(item.id)}
             />
@@ -184,6 +188,8 @@ function WatchItemsPanel({ section }: { section: Section }) {
 
 function WatchItemRow(props: {
   item: WatchItem;
+  showThreshold: boolean;
+  defaultThreshold: number;
   onSave: (body: { keywords?: string[]; enabled?: boolean; settings?: Record<string, unknown> }) => void;
   onDelete: () => void;
 }) {
@@ -195,9 +201,6 @@ function WatchItemRow(props: {
       <td>
         {item.name}
         {item.symbol && <span className="muted"> · {item.symbol}</span>}
-        {item.settings.move_threshold_pct != null && (
-          <span className="muted"> · ±{String(item.settings.move_threshold_pct)}%</span>
-        )}
       </td>
       <td className="muted">{TYPE_LABELS[item.type] ?? item.type}</td>
       <td>
@@ -217,6 +220,9 @@ function WatchItemRow(props: {
           {changed && <button type="submit">Spara</button>}
         </form>
       </td>
+      {props.showThreshold && (
+        <td>{item.type === "stock" && <ThresholdForm item={item} defaultThreshold={props.defaultThreshold} onSave={props.onSave} />}</td>
+      )}
       <td>
         <input
           type="checkbox"
@@ -231,6 +237,39 @@ function WatchItemRow(props: {
         </button>
       </td>
     </tr>
+  );
+}
+
+/** A stock's own alert threshold. Empty = use the section's default (the backend falls back to it). */
+function ThresholdForm(props: {
+  item: WatchItem;
+  defaultThreshold: number;
+  onSave: (body: { settings: Record<string, unknown> }) => void;
+}) {
+  const saved = props.item.settings.move_threshold_pct;
+  const savedText = saved == null ? "" : String(saved);
+  const [value, setValue] = useState(savedText);
+  useEffect(() => setValue(savedText), [savedText]);
+
+  const save = (e: FormEvent) => {
+    e.preventDefault();
+    const { move_threshold_pct: _old, ...rest } = props.item.settings;
+    props.onSave({ settings: value.trim() === "" ? rest : { ...rest, move_threshold_pct: Number(value) } });
+  };
+
+  return (
+    <form className="row-form threshold-form" onSubmit={save}>
+      <input
+        type="number"
+        min="0.5"
+        step="0.5"
+        aria-label={`Larmgräns i procent för ${props.item.name}`}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={`${props.defaultThreshold} (standard)`}
+      />
+      {value !== savedText && <button type="submit">Spara</button>}
+    </form>
   );
 }
 
