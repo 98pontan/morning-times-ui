@@ -403,6 +403,108 @@
     }
    }
   },
+  "/api/sections/{section_id}/regions": {
+   "get": {
+    "summary": "List Regions",
+    "operationId": "list_regions_api_sections__section_id__regions_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/RegionOut"
+         },
+         "title": "Response List Regions Api Sections  Section Id  Regions Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sections/{section_id}/regions/{slug}": {
+   "put": {
+    "summary": "Set Region",
+    "description": "Pick or un-pick a region: adds/enables its feed, or disables it (kept, so it can be re-picked).",
+    "operationId": "set_region_api_sections__section_id__regions__slug__put",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     },
+     {
+      "name": "slug",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Slug"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RegionPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RegionOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/sections/{section_id}/watch-items": {
    "get": {
     "summary": "List Watch Items",
@@ -594,6 +696,24 @@
        "title": "Section"
       },
       "description": "Section slug"
+     },
+     {
+      "name": "source_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Only articles from this source (e.g. one region)",
+       "title": "Source Id"
+      },
+      "description": "Only articles from this source (e.g. one region)"
      },
      {
       "name": "watched_only",
@@ -980,6 +1100,17 @@
       "type": "integer",
       "title": "Section Id"
      },
+     "source_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Id"
+     },
      "url": {
       "type": "string",
       "title": "Url"
@@ -1107,6 +1238,63 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "RegionOut": {
+    "properties": {
+     "slug": {
+      "type": "string",
+      "title": "Slug"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "covers": {
+      "type": "string",
+      "title": "Covers"
+     },
+     "url": {
+      "type": "string",
+      "title": "Url"
+     },
+     "source_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Id"
+     },
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "slug",
+     "name",
+     "covers",
+     "url"
+    ],
+    "title": "RegionOut"
+   },
+   "RegionPatch": {
+    "properties": {
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled"
+     }
+    },
+    "type": "object",
+    "required": [
+     "enabled"
+    ],
+    "title": "RegionPatch"
    },
    "SectionIn": {
     "properties": {

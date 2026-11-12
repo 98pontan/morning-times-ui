@@ -9,6 +9,7 @@ export const keys = {
   sections: ["sections"] as const,
   sources: (id: number) => ["sections", id, "sources"] as const,
   watchItems: (id: number) => ["sections", id, "watch-items"] as const,
+  regions: (id: number) => ["sections", id, "regions"] as const,
   articles: ["articles"] as const,
   briefs: ["briefs"] as const,
   alerts: ["alerts"] as const,
@@ -22,7 +23,15 @@ export const useSources = (sectionId: number) =>
 export const useWatchItems = (sectionId: number) =>
   useQuery({ queryKey: keys.watchItems(sectionId), queryFn: () => api.watchItems(sectionId) });
 
-export const useArticles = (params: { section?: string; watchedOnly?: boolean; hours?: number }) =>
+/** Local editions for a regional section; pass undefined for other sections to skip the request. */
+export const useRegions = (sectionId: number | undefined) =>
+  useQuery({
+    queryKey: keys.regions(sectionId ?? 0),
+    queryFn: () => api.regions(sectionId!),
+    enabled: sectionId != null,
+  });
+
+export const useArticles = (params: { section?: string; sourceId?: number; watchedOnly?: boolean; hours?: number }) =>
   useQuery({
     queryKey: [...keys.articles, params],
     queryFn: () => api.articles(params),
@@ -90,6 +99,15 @@ export function useWatchItemMutations(sectionId: number) {
     }),
     remove: useMutation({ mutationFn: (id: number) => api.deleteWatchItem(id), onSuccess: done }),
   };
+}
+
+export function useRegionMutation(sectionId: number) {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ slug, enabled }: { slug: string; enabled: boolean }) => api.setRegion(sectionId, slug, enabled),
+    // A picked region is a new source, fetched at once by the backend.
+    onSuccess: () => invalidate(keys.regions(sectionId), keys.sources(sectionId), keys.articles),
+  });
 }
 
 export function useJobs() {

@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 import type { Section, WatchItem, WatchItemIn } from "../../api/client";
 import {
-  useSectionKinds, useSectionMutations, useSections, useSourceMutations, useSources, useWatchItemMutations, useWatchItems,
+  useRegionMutation, useRegions, useSectionKinds, useSectionMutations, useSections, useSourceMutations, useSources,
+  useWatchItemMutations, useWatchItems,
 } from "../../api/hooks";
 import { ErrorBox, Loading } from "../../components/Layout";
 import { timeAgo } from "../../lib/format";
@@ -35,6 +36,7 @@ export function SectionSettingsPage() {
       </p>
       <h1 className="section-title">{section.name}</h1>
       <GeneralPanel section={section} />
+      {section.kind === "regional" && <RegionsPanel section={section} />}
       <WatchItemsPanel section={section} />
       <SourcesPanel section={section} />
     </div>
@@ -83,6 +85,41 @@ function GeneralPanel({ section }: { section: Section }) {
         {update.isSuccess && <span className="muted">Sparat</span>}
       </form>
       {update.error && <ErrorBox error={update.error} />}
+    </section>
+  );
+}
+
+function RegionsPanel({ section }: { section: Section }) {
+  const regions = useRegions(section.id);
+  const setRegion = useRegionMutation(section.id);
+
+  return (
+    <section className="panel">
+      <h2>Regioner</h2>
+      <p className="muted hint">
+        Välj vilka av SVT:s lokalredaktioner som hamnar under {section.name}. En ny region hämtas direkt.
+      </p>
+      {regions.isPending && <Loading />}
+      {regions.error && <ErrorBox error={regions.error} />}
+      <ul className="region-grid">
+        {regions.data?.map((r) => (
+          <li key={r.slug}>
+            <label>
+              <input
+                type="checkbox"
+                checked={r.enabled ?? false}
+                disabled={setRegion.isPending && setRegion.variables?.slug === r.slug}
+                onChange={(e) => setRegion.mutate({ slug: r.slug, enabled: e.target.checked })}
+              />
+              <span>
+                {r.name}
+                <small>{r.covers}</small>
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      {setRegion.error && <ErrorBox error={setRegion.error} />}
     </section>
   );
 }

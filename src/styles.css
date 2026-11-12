@@ -112,6 +112,10 @@ input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--rule); 
 .segmented button:last-child { border-radius: 0 6px 6px 0; }
 .segmented button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .toggle { display: inline-flex; gap: 6px; align-items: center; }
+.region-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.pill { background: var(--surface); color: var(--ink); border-color: var(--rule); border-radius: 999px; padding: 2px 12px; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.region-bar select { border-radius: 999px; padding: 2px 10px; }
 .error { border-left: 3px solid var(--danger); background: var(--surface); padding: 8px 12px; margin: 8px 0; }
 
 /* Settings */
@@ -132,4 +136,8 @@ input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--rule); 
 .inline-form label.grow { flex: 1 1 280px; }
 .inline-form .hint, .inline-form .error { width: 100%; }
 .row-form { display: flex; gap: 6px; }
+.region-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 16px; margin: 0 0 8px; padding: 0; list-style: none; }
+.region-grid label { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; cursor: pointer; }
+.region-grid input { margin-top: 4px; }
+.region-grid small { display: block; color: var(--muted); }
 .row-form input { min-width: 160px; flex: 1; }

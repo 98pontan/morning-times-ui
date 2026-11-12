@@ -128,6 +128,43 @@ export interface paths {
         patch: operations["update_source_api_sources__source_id__patch"];
         trace?: never;
     };
+    "/api/sections/{section_id}/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Regions */
+        get: operations["list_regions_api_sections__section_id__regions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sections/{section_id}/regions/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Region
+         * @description Pick or un-pick a region: adds/enables its feed, or disables it (kept, so it can be re-picked).
+         */
+        put: operations["set_region_api_sections__section_id__regions__slug__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sections/{section_id}/watch-items": {
         parameters: {
             query?: never;
@@ -345,6 +382,8 @@ export interface components {
             id: number;
             /** Section Id */
             section_id: number;
+            /** Source Id */
+            source_id?: number | null;
             /** Url */
             url: string;
             /** Title */
@@ -390,6 +429,29 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** RegionOut */
+        RegionOut: {
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Covers */
+            covers: string;
+            /** Url */
+            url: string;
+            /** Source Id */
+            source_id?: number | null;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+        };
+        /** RegionPatch */
+        RegionPatch: {
+            /** Enabled */
+            enabled: boolean;
         };
         /** SectionIn */
         SectionIn: {
@@ -916,6 +978,73 @@ export interface operations {
             };
         };
     };
+    list_regions_api_sections__section_id__regions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_region_api_sections__section_id__regions__slug__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_watch_items_api_sections__section_id__watch_items_get: {
         parameters: {
             query?: never;
@@ -1051,6 +1180,8 @@ export interface operations {
             query?: {
                 /** @description Section slug */
                 section?: string | null;
+                /** @description Only articles from this source (e.g. one region) */
+                source_id?: number | null;
                 watched_only?: boolean;
                 hours?: number;
                 limit?: number;

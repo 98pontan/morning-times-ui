@@ -10,6 +10,7 @@ export type SectionKind = Schemas["SectionKindOut"];
 export type Source = Schemas["SourceOut"];
 export type SourceIn = Schemas["SourceIn"];
 export type SourcePatch = Schemas["SourcePatch"];
+export type Region = Schemas["RegionOut"];
 export type WatchItem = Schemas["WatchItemOut"];
 export type WatchItemIn = Schemas["WatchItemIn"];
 export type WatchItemPatch = Schemas["WatchItemPatch"];
@@ -90,15 +91,20 @@ export const api = {
   updateSource: (id: number, body: SourcePatch) => request<Source>(`/sources/${id}`, json("PATCH", body)),
   deleteSource: (id: number) => request<void>(`/sources/${id}`, { method: "DELETE" }),
 
+  regions: (sectionId: number) => request<Region[]>(`/sections/${sectionId}/regions`),
+  setRegion: (sectionId: number, slug: string, enabled: boolean) =>
+    request<Region>(`/sections/${sectionId}/regions/${slug}`, json("PUT", { enabled })),
+
   watchItems: (sectionId: number) => request<WatchItem[]>(`/sections/${sectionId}/watch-items`),
   createWatchItem: (sectionId: number, body: WatchItemIn) =>
     request<WatchItem>(`/sections/${sectionId}/watch-items`, json("POST", body)),
   updateWatchItem: (id: number, body: WatchItemPatch) => request<WatchItem>(`/watch-items/${id}`, json("PATCH", body)),
   deleteWatchItem: (id: number) => request<void>(`/watch-items/${id}`, { method: "DELETE" }),
 
-  articles: (params: { section?: string; watchedOnly?: boolean; hours?: number; limit?: number }) => {
+  articles: (params: { section?: string; sourceId?: number; watchedOnly?: boolean; hours?: number; limit?: number }) => {
     const q = new URLSearchParams();
     if (params.section) q.set("section", params.section);
+    if (params.sourceId != null) q.set("source_id", String(params.sourceId));
     if (params.watchedOnly) q.set("watched_only", "true");
     q.set("hours", String(params.hours ?? 24));
     q.set("limit", String(params.limit ?? 100));
