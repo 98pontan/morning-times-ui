@@ -14,6 +14,13 @@ export type Region = Schemas["RegionOut"];
 export type StockRow = Schemas["StockRowOut"];
 export type MarketOverview = Schemas["MarketOverviewOut"];
 export type Chart = Schemas["ChartOut"];
+export type WarningArea = Schemas["WarningAreaOut"];
+export type WarningLevel = "MESSAGE" | "YELLOW" | "ORANGE" | "RED";
+export type WeatherWarning = Schemas["WarningOut"];
+export type ForecastStep = Schemas["ForecastStepOut"];
+export type DayForecast = Schemas["DayForecastOut"];
+export type PlaceForecast = Schemas["PlaceForecastOut"];
+export type WeatherOverview = Schemas["WeatherOverviewOut"];
 export type ChartRange = "1d" | "1w" | "1m" | "3m" | "ytd" | "1y" | "5y";
 export type WatchItem = Schemas["WatchItemOut"];
 export type WatchItemIn = Schemas["WatchItemIn"];
@@ -36,6 +43,30 @@ export interface BriefData {
   };
   articles: Record<string, { url: string; title: string; source: string }>;
   section_names: Record<string, string>;
+  // Today's weather from the weather sections; missing in briefs from before the weather section.
+  weather?: BriefWeather | null;
+}
+
+export interface BriefWeather {
+  places: {
+    name: string;
+    error: string | null;
+    now_temp: number | null;
+    symbol_text: string;
+    min_temp: number | null;
+    max_temp: number | null;
+    precipitation: number | null;
+    max_wind: number | null;
+  }[];
+  warnings: {
+    level: WarningLevel;
+    level_name: string;
+    event: string;
+    area_name: string;
+    areas: string[];
+    start: string | null;
+    end: string | null;
+  }[];
 }
 
 export interface JobResult {
@@ -102,6 +133,11 @@ export const api = {
   market: (sectionId: number) => request<MarketOverview>(`/sections/${sectionId}/market`),
   chart: (symbol: string, range: ChartRange) =>
     request<Chart>(`/market/chart?${new URLSearchParams({ symbol, range })}`),
+
+  weather: (sectionId: number) => request<WeatherOverview>(`/sections/${sectionId}/weather`),
+  warningAreas: (sectionId: number) => request<WarningArea[]>(`/sections/${sectionId}/warning-areas`),
+  setWarningArea: (sectionId: number, areaId: number, body: { enabled: boolean; levels?: WarningLevel[] }) =>
+    request<WarningArea>(`/sections/${sectionId}/warning-areas/${areaId}`, json("PUT", body)),
 
   watchItems: (sectionId: number) => request<WatchItem[]>(`/sections/${sectionId}/watch-items`),
   createWatchItem: (sectionId: number, body: WatchItemIn) =>

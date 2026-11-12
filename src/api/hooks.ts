@@ -1,7 +1,7 @@
 // React Query hooks: caching, loading states and refetching after changes.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./client";
-import type { ChartRange, SectionIn, SectionPatch, SourceIn, SourcePatch, WatchItemIn, WatchItemPatch } from "./client";
+import type { ChartRange, WarningLevel, SectionIn, SectionPatch, SourceIn, SourcePatch, WatchItemIn, WatchItemPatch } from "./client";
 
 export const keys = {
   config: ["config"] as const,
@@ -12,6 +12,8 @@ export const keys = {
   regions: (id: number) => ["sections", id, "regions"] as const,
   market: (id: number) => ["sections", id, "market"] as const,
   chart: (symbol: string, range: ChartRange) => ["chart", symbol, range] as const,
+  weather: (id: number) => ["sections", id, "weather"] as const,
+  warningAreas: (id: number) => ["sections", id, "warning-areas"] as const,
   articles: ["articles"] as const,
   briefs: ["briefs"] as const,
   alerts: ["alerts"] as const,
@@ -45,6 +47,30 @@ export const useChart = (symbol: string | undefined, range: ChartRange) =>
     refetchInterval: range === "1d" ? 2 * 60_000 : false,
     placeholderData: (previous) => previous, // keep the old line while a new range loads
   });
+
+/** Forecasts and SMHI warnings for a weather section (cached ~10 min by the backend). */
+export const useWeather = (sectionId: number) =>
+  useQuery({ queryKey: keys.weather(sectionId), queryFn: () => api.weather(sectionId), refetchInterval: 10 * 60_000 });
+
+/** SMHI counties and sea districts for a weather section; undefined skips the request. */
+export const useWarningAreas = (sectionId: number | undefined) =>
+  useQuery({
+    queryKey: keys.warningAreas(sectionId ?? 0),
+    queryFn: () => api.warningAreas(sectionId!),
+    enabled: sectionId != null,
+    staleTime: Infinity,
+  });
+
+export function useWarningAreaMutation(sectionId: number) {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ areaId, ...body }: { areaId: number; enabled: boolean; levels?: WarningLevel[] }) =>
+      api.setWarningArea(sectionId, areaId, body),
+    // Areas are watch items, and the weather page shows warnings for the followed areas.
+    onSuccess: () =>
+      invalidate(keys.warningAreas(sectionId), keys.watchItems(sectionId), keys.weather(sectionId)),
+  });
+}
 
 export const useArticles = (params: { section?: string; sourceId?: number; watchedOnly?: boolean; hours?: number }) =>
   useQuery({

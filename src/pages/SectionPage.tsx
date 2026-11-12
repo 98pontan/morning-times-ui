@@ -4,6 +4,7 @@ import { useArticles, useRegionMutation, useRegions, useSections } from "../api/
 import { ArticleList } from "../components/ArticleList";
 import { ErrorBox, Loading } from "../components/Layout";
 import { StockScreen } from "../components/StockScreen";
+import { WeatherScreen } from "../components/WeatherScreen";
 
 const RANGES = [
   { hours: 24, label: "Idag" },
@@ -37,22 +38,29 @@ export function SectionPage() {
       )}
       {section?.kind === "economy" && <StockScreen section={section} />}
       {section?.kind === "economy" && <h2 className="sidebar-title">Nyheter</h2>}
-      <div className="toolbar">
-        <div className="segmented" role="group" aria-label="Tidsperiod">
-          {RANGES.map((r) => (
-            <button key={r.hours} aria-pressed={hours === r.hours} onClick={() => update("hours", String(r.hours))}>
-              {r.label}
-            </button>
-          ))}
-        </div>
-        <label className="toggle">
-          <input type="checkbox" checked={watchedOnly} onChange={(e) => update("watched", e.target.checked ? "1" : null)} />
-          Bara det jag följer
-        </label>
-      </div>
-      {articles.isPending && <Loading />}
-      {articles.error && <ErrorBox error={articles.error} />}
-      {articles.data && <ArticleList articles={articles.data} />}
+      {section?.kind === "weather" && <WeatherScreen section={section} />}
+      {/* A weather section usually has no news feeds; then there is nothing more to show. */}
+      {(section?.kind !== "weather" || !!articles.data?.length) && (
+        <>
+          {section?.kind === "weather" && <h2 className="sidebar-title">Nyheter</h2>}
+          <div className="toolbar">
+            <div className="segmented" role="group" aria-label="Tidsperiod">
+              {RANGES.map((r) => (
+                <button key={r.hours} aria-pressed={hours === r.hours} onClick={() => update("hours", String(r.hours))}>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <label className="toggle">
+              <input type="checkbox" checked={watchedOnly} onChange={(e) => update("watched", e.target.checked ? "1" : null)} />
+              Bara det jag följer
+            </label>
+          </div>
+          {articles.isPending && <Loading />}
+          {articles.error && <ErrorBox error={articles.error} />}
+          {articles.data && <ArticleList articles={articles.data} />}
+        </>
+      )}
     </div>
   );
 }

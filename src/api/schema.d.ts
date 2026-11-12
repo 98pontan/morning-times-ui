@@ -202,6 +202,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sections/{section_id}/warning-areas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Warning Areas
+         * @description SMHI counties and sea districts, with whether warnings for them are followed and at which levels.
+         */
+        get: operations["list_warning_areas_api_sections__section_id__warning_areas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sections/{section_id}/warning-areas/{area_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Warning Area
+         * @description Follow (or stop following) SMHI warnings for an area, and choose which levels are emailed.
+         */
+        put: operations["set_warning_area_api_sections__section_id__warning_areas__area_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sections/{section_id}/weather": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Weather Overview
+         * @description Forecasts for the section's places and current SMHI warnings for its areas (cached ~10 min).
+         */
+        get: operations["weather_overview_api_sections__section_id__weather_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sections/{section_id}/watch-items": {
         parameters: {
             query?: never;
@@ -481,6 +541,50 @@ export interface components {
             /** Close */
             close: number;
         };
+        /** DayForecastOut */
+        DayForecastOut: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Min Temp */
+            min_temp: number | null;
+            /** Max Temp */
+            max_temp: number | null;
+            /** Precipitation */
+            precipitation: number;
+            /** Symbol */
+            symbol: number | null;
+            /** Symbol Text */
+            symbol_text: string;
+            /** Max Wind */
+            max_wind: number | null;
+        };
+        /** ForecastStepOut */
+        ForecastStepOut: {
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /** Hours */
+            hours: number;
+            /** Temperature */
+            temperature: number | null;
+            /** Symbol */
+            symbol: number | null;
+            /** Symbol Text */
+            symbol_text: string;
+            /** Precipitation */
+            precipitation: number | null;
+            /** Wind Speed */
+            wind_speed: number | null;
+            /** Wind Gust */
+            wind_gust: number | null;
+            /** Wind Direction */
+            wind_direction: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -496,6 +600,24 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** PlaceForecastOut */
+        PlaceForecastOut: {
+            /** Name */
+            name: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Watch Item Id */
+            watch_item_id?: number | null;
+            now?: components["schemas"]["ForecastStepOut"] | null;
+            /** Hours */
+            hours?: components["schemas"]["ForecastStepOut"][];
+            /** Days */
+            days?: components["schemas"]["DayForecastOut"][];
+            /** Error */
+            error?: string | null;
         };
         /** RegionOut */
         RegionOut: {
@@ -682,6 +804,60 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** WarningAreaOut */
+        WarningAreaOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Kind */
+            kind: string;
+            /** Watch Item Id */
+            watch_item_id?: number | null;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /** Levels */
+            levels?: string[];
+        };
+        /** WarningAreaPatch */
+        WarningAreaPatch: {
+            /** Enabled */
+            enabled: boolean;
+            /** Levels */
+            levels?: ("MESSAGE" | "YELLOW" | "ORANGE" | "RED")[] | null;
+        };
+        /** WarningOut */
+        WarningOut: {
+            /** Id */
+            id: number;
+            /** Event */
+            event: string;
+            /** Event Code */
+            event_code: string;
+            /** Level */
+            level: string;
+            /** Level Name */
+            level_name: string;
+            /** Area Name */
+            area_name: string;
+            /** Areas */
+            areas: string[];
+            /** Alerting */
+            alerting: boolean;
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** Published */
+            published?: string | null;
+            /** Descriptions */
+            descriptions?: {
+                [key: string]: string;
+            };
+        };
         /** WatchItemIn */
         WatchItemIn: {
             /** Type */
@@ -737,6 +913,20 @@ export interface components {
             } | null;
             /** Enabled */
             enabled?: boolean | null;
+        };
+        /** WeatherOverviewOut */
+        WeatherOverviewOut: {
+            /** Places */
+            places: components["schemas"]["PlaceForecastOut"][];
+            /** Warnings */
+            warnings: components["schemas"]["WarningOut"][];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Error */
+            error?: string | null;
         };
     };
     responses: never;
@@ -1204,6 +1394,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChartOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_warning_areas_api_sections__section_id__warning_areas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WarningAreaOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_warning_area_api_sections__section_id__warning_areas__area_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+                area_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WarningAreaPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WarningAreaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    weather_overview_api_sections__section_id__weather_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherOverviewOut"];
                 };
             };
             /** @description Validation Error */

@@ -599,6 +599,149 @@
     }
    }
   },
+  "/api/sections/{section_id}/warning-areas": {
+   "get": {
+    "summary": "List Warning Areas",
+    "description": "SMHI counties and sea districts, with whether warnings for them are followed and at which levels.",
+    "operationId": "list_warning_areas_api_sections__section_id__warning_areas_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/WarningAreaOut"
+         },
+         "title": "Response List Warning Areas Api Sections  Section Id  Warning Areas Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sections/{section_id}/warning-areas/{area_id}": {
+   "put": {
+    "summary": "Set Warning Area",
+    "description": "Follow (or stop following) SMHI warnings for an area, and choose which levels are emailed.",
+    "operationId": "set_warning_area_api_sections__section_id__warning_areas__area_id__put",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     },
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Area Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/WarningAreaPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WarningAreaOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sections/{section_id}/weather": {
+   "get": {
+    "summary": "Weather Overview",
+    "description": "Forecasts for the section's places and current SMHI warnings for its areas (cached ~10 min).",
+    "operationId": "weather_overview_api_sections__section_id__weather_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WeatherOverviewOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/sections/{section_id}/watch-items": {
    "get": {
     "summary": "List Watch Items",
@@ -1365,6 +1508,174 @@
     ],
     "title": "ChartPointOut"
    },
+   "DayForecastOut": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "min_temp": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Temp"
+     },
+     "max_temp": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Temp"
+     },
+     "precipitation": {
+      "type": "number",
+      "title": "Precipitation"
+     },
+     "symbol": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Symbol"
+     },
+     "symbol_text": {
+      "type": "string",
+      "title": "Symbol Text"
+     },
+     "max_wind": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Wind"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "min_temp",
+     "max_temp",
+     "precipitation",
+     "symbol",
+     "symbol_text",
+     "max_wind"
+    ],
+    "title": "DayForecastOut"
+   },
+   "ForecastStepOut": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Time"
+     },
+     "hours": {
+      "type": "number",
+      "title": "Hours"
+     },
+     "temperature": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature"
+     },
+     "symbol": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Symbol"
+     },
+     "symbol_text": {
+      "type": "string",
+      "title": "Symbol Text"
+     },
+     "precipitation": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Precipitation"
+     },
+     "wind_speed": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Speed"
+     },
+     "wind_gust": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Gust"
+     },
+     "wind_direction": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Direction"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time",
+     "hours",
+     "temperature",
+     "symbol",
+     "symbol_text",
+     "precipitation",
+     "wind_speed",
+     "wind_gust",
+     "wind_direction"
+    ],
+    "title": "ForecastStepOut"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -1410,6 +1721,75 @@
      "updated_at"
     ],
     "title": "MarketOverviewOut"
+   },
+   "PlaceForecastOut": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "watch_item_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Watch Item Id"
+     },
+     "now": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ForecastStepOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "hours": {
+      "items": {
+       "$ref": "#/components/schemas/ForecastStepOut"
+      },
+      "type": "array",
+      "title": "Hours"
+     },
+     "days": {
+      "items": {
+       "$ref": "#/components/schemas/DayForecastOut"
+      },
+      "type": "array",
+      "title": "Days"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "lat",
+     "lon"
+    ],
+    "title": "PlaceForecastOut"
    },
    "RegionOut": {
     "properties": {
@@ -1971,6 +2351,179 @@
     ],
     "title": "ValidationError"
    },
+   "WarningAreaOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "watch_item_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Watch Item Id"
+     },
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled",
+      "default": false
+     },
+     "levels": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Levels"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "kind"
+    ],
+    "title": "WarningAreaOut"
+   },
+   "WarningAreaPatch": {
+    "properties": {
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled"
+     },
+     "levels": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string",
+         "enum": [
+          "MESSAGE",
+          "YELLOW",
+          "ORANGE",
+          "RED"
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Levels"
+     }
+    },
+    "type": "object",
+    "required": [
+     "enabled"
+    ],
+    "title": "WarningAreaPatch"
+   },
+   "WarningOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "event": {
+      "type": "string",
+      "title": "Event"
+     },
+     "event_code": {
+      "type": "string",
+      "title": "Event Code"
+     },
+     "level": {
+      "type": "string",
+      "title": "Level"
+     },
+     "level_name": {
+      "type": "string",
+      "title": "Level Name"
+     },
+     "area_name": {
+      "type": "string",
+      "title": "Area Name"
+     },
+     "areas": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Areas"
+     },
+     "alerting": {
+      "type": "boolean",
+      "title": "Alerting"
+     },
+     "start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Start"
+     },
+     "end": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "published": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published"
+     },
+     "descriptions": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Descriptions"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "event",
+     "event_code",
+     "level",
+     "level_name",
+     "area_name",
+     "areas",
+     "alerting"
+    ],
+    "title": "WarningOut"
+   },
    "WatchItemIn": {
     "properties": {
      "type": {
@@ -2142,6 +2695,47 @@
     },
     "type": "object",
     "title": "WatchItemPatch"
+   },
+   "WeatherOverviewOut": {
+    "properties": {
+     "places": {
+      "items": {
+       "$ref": "#/components/schemas/PlaceForecastOut"
+      },
+      "type": "array",
+      "title": "Places"
+     },
+     "warnings": {
+      "items": {
+       "$ref": "#/components/schemas/WarningOut"
+      },
+      "type": "array",
+      "title": "Warnings"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     }
+    },
+    "type": "object",
+    "required": [
+     "places",
+     "warnings",
+     "updated_at"
+    ],
+    "title": "WeatherOverviewOut"
    }
   }
  }

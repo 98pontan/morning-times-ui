@@ -1,18 +1,25 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
-import type { Section, WatchItem, WatchItemIn } from "../../api/client";
+import type { Section, WarningArea, WarningLevel, WatchItem, WatchItemIn } from "../../api/client";
 import {
-  useRegionMutation, useRegions, useSectionKinds, useSectionMutations, useSections, useSourceMutations, useSources,
+  useRegionMutation, useRegions, useWarningAreaMutation, useWarningAreas, useSectionKinds, useSectionMutations, useSections, useSourceMutations, useSources,
   useWatchItemMutations, useWatchItems,
 } from "../../api/hooks";
 import { ErrorBox, Loading } from "../../components/Layout";
 import { timeAgo } from "../../lib/format";
+import { LEVELS } from "../../lib/weather";
 
-const TYPE_LABELS: Record<string, string> = { stock: "Aktie", team: "Lag", region: "Region", keyword: "Nyckelord" };
+const TYPE_LABELS: Record<string, string> = {
+  stock: "Aktie", team: "Lag", region: "Region", keyword: "Nyckelord", place: "Plats (prognos)",
+  warning_area: "Varningsområde",
+};
 const SYMBOL_LABELS: Record<string, string> = {
   stock: "Ticker (Yahoo, t.ex. VOLV-B.ST)",
   team: "Sport/liga (t.ex. ishockey/SHL)",
+  place: "Position lat,lon (t.ex. 59.3293,18.0686)",
 };
+// Chosen in their own panel, not as free-form watch items.
+const PANEL_TYPES = new Set(["warning_area"]);
 
 const splitKeywords = (value: string) =>
   value
@@ -37,6 +44,7 @@ export function SectionSettingsPage() {
       <h1 className="section-title">{section.name}</h1>
       <GeneralPanel section={section} />
       {section.kind === "regional" && <RegionsPanel section={section} />}
+      {section.kind === "weather" && <WarningAreasPanel section={section} />}
       <WatchItemsPanel section={section} />
       <SourcesPanel section={section} />
     </div>
@@ -140,11 +148,94 @@ function RegionsPanel({ section }: { section: Section }) {
   );
 }
 
+function WarningAreasPanel({ section }: { section: Section }) {
+  const areas = useWarningAreas(section.id);
+  const setArea = useWarningAreaMutation(section.id);
+  const counties = areas.data?.filter((a) => a.kind === "county") ?? [];
+  const seas = areas.data?.filter((a) => a.kind === "sea") ?? [];
+  const followedSeas = seas.filter((a) => a.enabled).length;
+
+  const grid = (list: WarningArea[]) => (
+    <ul className="area-list">
+      {list.map((a) => (
+        <WarningAreaRow
+          key={a.id}
+          area={a}
+          busy={setArea.isPending && setArea.variables?.areaId === a.id}
+          onChange={(body) => setArea.mutate({ areaId: a.id, ...body })}
+        />
+      ))}
+    </ul>
+  );
+
+  return (
+    <section className="panel">
+      <h2>SMHI-varningar</h2>
+      <p className="muted hint">
+        Välj län (och havsområden) att få varningar för, och vilka nivåer som ska mejlas. Varningar som bara gäller en
+        del av ett län räknas också.
+      </p>
+      {areas.isPending && <Loading />}
+      {areas.error && <ErrorBox error={areas.error} />}
+      {grid(counties)}
+      {seas.length > 0 && (
+        <details>
+          <summary>Havsområden{followedSeas ? ` (${followedSeas} valda)` : ""}</summary>
+          {grid(seas)}
+        </details>
+      )}
+      {setArea.error && <ErrorBox error={setArea.error} />}
+    </section>
+  );
+}
+
+function WarningAreaRow(props: {
+  area: WarningArea;
+  busy: boolean;
+  onChange: (body: { enabled: boolean; levels?: WarningLevel[] }) => void;
+}) {
+  const { area } = props;
+  const levels = (area.levels ?? []) as WarningLevel[];
+  const toggleLevel = (code: WarningLevel, on: boolean) =>
+    props.onChange({ enabled: true, levels: on ? [...levels, code] : levels.filter((l) => l !== code) });
+
+  return (
+    <li className={area.enabled ? "area followed" : "area"}>
+      <label>
+        <input
+          type="checkbox"
+          checked={area.enabled ?? false}
+          disabled={props.busy}
+          onChange={(e) => props.onChange({ enabled: e.target.checked })}
+        />
+        <span>{area.name}</span>
+      </label>
+      {area.enabled && (
+        <span className="levels" role="group" aria-label={`Larmnivåer för ${area.name}`}>
+          {LEVELS.map((l) => (
+            <label key={l.code} className={`level-chip level-${l.code.toLowerCase()}`}>
+              <input
+                type="checkbox"
+                checked={levels.includes(l.code)}
+                disabled={props.busy}
+                onChange={(e) => toggleLevel(l.code, e.target.checked)}
+              />
+              {l.label}
+            </label>
+          ))}
+        </span>
+      )}
+    </li>
+  );
+}
+
 function WatchItemsPanel({ section }: { section: Section }) {
   const items = useWatchItems(section.id);
   const kinds = useSectionKinds();
   const { create, update, remove } = useWatchItemMutations(section.id);
-  const types = kinds.data?.find((k) => k.kind === section.kind)?.item_types ?? ["keyword"];
+  const types = (kinds.data?.find((k) => k.kind === section.kind)?.item_types ?? ["keyword"]).filter(
+    (t) => !PANEL_TYPES.has(t),
+  );
   const hasStocks = section.kind === "economy";
 
   return (
@@ -153,6 +244,7 @@ function WatchItemsPanel({ section }: { section: Section }) {
       <p className="muted hint">
         Artiklar som nämner namnet eller ett nyckelord märks och kan ge larm.
         {section.kind === "economy" && " Aktier larmar även vid stora kursrörelser och inför kvartalsrapporter."}
+        {section.kind === "weather" && " Platser får en prognos på vädersidan och i morgonbrevet."}
       </p>
       {items.isPending && <Loading />}
       {items.error && <ErrorBox error={items.error} />}
@@ -168,7 +260,7 @@ function WatchItemsPanel({ section }: { section: Section }) {
           </tr>
         </thead>
         <tbody>
-          {items.data?.map((item) => (
+          {items.data?.filter((item) => !PANEL_TYPES.has(item.type)).map((item) => (
             <WatchItemRow
               key={item.id}
               item={item}
