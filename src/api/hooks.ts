@@ -1,7 +1,7 @@
 // React Query hooks: caching, loading states and refetching after changes.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./client";
-import type { SectionIn, SectionPatch, SourceIn, SourcePatch, WatchItemIn, WatchItemPatch } from "./client";
+import type { ChartRange, SectionIn, SectionPatch, SourceIn, SourcePatch, WatchItemIn, WatchItemPatch } from "./client";
 
 export const keys = {
   config: ["config"] as const,
@@ -10,6 +10,8 @@ export const keys = {
   sources: (id: number) => ["sections", id, "sources"] as const,
   watchItems: (id: number) => ["sections", id, "watch-items"] as const,
   regions: (id: number) => ["sections", id, "regions"] as const,
+  market: (id: number) => ["sections", id, "market"] as const,
+  chart: (symbol: string, range: ChartRange) => ["chart", symbol, range] as const,
   articles: ["articles"] as const,
   briefs: ["briefs"] as const,
   alerts: ["alerts"] as const,
@@ -29,6 +31,19 @@ export const useRegions = (sectionId: number | undefined) =>
     queryKey: keys.regions(sectionId ?? 0),
     queryFn: () => api.regions(sectionId!),
     enabled: sectionId != null,
+  });
+
+/** Stock screen for an economy section. Prices are ~15 min delayed and cached 2 min by the backend. */
+export const useMarket = (sectionId: number) =>
+  useQuery({ queryKey: keys.market(sectionId), queryFn: () => api.market(sectionId), refetchInterval: 2 * 60_000 });
+
+export const useChart = (symbol: string | undefined, range: ChartRange) =>
+  useQuery({
+    queryKey: keys.chart(symbol ?? "", range),
+    queryFn: () => api.chart(symbol!, range),
+    enabled: !!symbol,
+    refetchInterval: range === "1d" ? 2 * 60_000 : false,
+    placeholderData: (previous) => previous, // keep the old line while a new range loads
   });
 
 export const useArticles = (params: { section?: string; sourceId?: number; watchedOnly?: boolean; hours?: number }) =>
@@ -63,6 +78,7 @@ function useInvalidate() {
 
 export function useSectionMutations() {
   const invalidate = useInvalidate();
+  // keys.sections is a prefix of every per-section query (sources, regions, market), so all refresh.
   const done = () => invalidate(keys.sections, keys.articles);
   return {
     create: useMutation({ mutationFn: (body: SectionIn) => api.createSection(body), onSuccess: done }),
@@ -90,7 +106,7 @@ export function useSourceMutations(sectionId: number) {
 export function useWatchItemMutations(sectionId: number) {
   const invalidate = useInvalidate();
   // Changing watch items re-tags recent articles on the backend.
-  const done = () => invalidate(keys.watchItems(sectionId), keys.articles);
+  const done = () => invalidate(keys.watchItems(sectionId), keys.articles, keys.market(sectionId));
   return {
     create: useMutation({ mutationFn: (body: WatchItemIn) => api.createWatchItem(sectionId, body), onSuccess: done }),
     update: useMutation({

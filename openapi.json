@@ -505,6 +505,100 @@
     }
    }
   },
+  "/api/sections/{section_id}/market": {
+   "get": {
+    "summary": "Market Overview",
+    "description": "Prices and development for the section's watched stocks and its reference index (cached ~2 min).",
+    "operationId": "market_overview_api_sections__section_id__market_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/MarketOverviewOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/market/chart": {
+   "get": {
+    "summary": "Market Chart",
+    "operationId": "market_chart_api_market_chart_get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9^=.\\-]{1,32}$",
+       "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX",
+       "title": "Symbol"
+      },
+      "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX"
+     },
+     {
+      "name": "range",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y",
+       "default": "1m",
+       "title": "Range"
+      },
+      "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ChartOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/sections/{section_id}/watch-items": {
    "get": {
     "summary": "List Watch Items",
@@ -1226,6 +1320,51 @@
     ],
     "title": "BriefOut"
    },
+   "ChartOut": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "range": {
+      "type": "string",
+      "title": "Range"
+     },
+     "points": {
+      "items": {
+       "$ref": "#/components/schemas/ChartPointOut"
+      },
+      "type": "array",
+      "title": "Points"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "range",
+     "points"
+    ],
+    "title": "ChartOut"
+   },
+   "ChartPointOut": {
+    "properties": {
+     "t": {
+      "type": "string",
+      "format": "date-time",
+      "title": "T"
+     },
+     "close": {
+      "type": "number",
+      "title": "Close"
+     }
+    },
+    "type": "object",
+    "required": [
+     "t",
+     "close"
+    ],
+    "title": "ChartPointOut"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -1238,6 +1377,39 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "MarketOverviewOut": {
+    "properties": {
+     "index": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StockRowOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "stocks": {
+      "items": {
+       "$ref": "#/components/schemas/StockRowOut"
+      },
+      "type": "array",
+      "title": "Stocks"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "index",
+     "stocks",
+     "updated_at"
+    ],
+    "title": "MarketOverviewOut"
    },
    "RegionOut": {
     "properties": {
@@ -1591,6 +1763,173 @@
     },
     "type": "object",
     "title": "SourcePatch"
+   },
+   "StockRowOut": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "watch_item_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Watch Item Id"
+     },
+     "currency": {
+      "type": "string",
+      "title": "Currency",
+      "default": ""
+     },
+     "last": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last"
+     },
+     "change": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change"
+     },
+     "change_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Pct"
+     },
+     "returns": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "object",
+      "title": "Returns"
+     },
+     "high_52w": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "High 52W"
+     },
+     "low_52w": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Low 52W"
+     },
+     "volume": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Volume"
+     },
+     "turnover": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Turnover"
+     },
+     "earnings_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Earnings Date"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "spark": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Spark"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "symbol"
+    ],
+    "title": "StockRowOut"
    },
    "ValidationError": {
     "properties": {

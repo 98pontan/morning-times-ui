@@ -11,6 +11,10 @@ export type Source = Schemas["SourceOut"];
 export type SourceIn = Schemas["SourceIn"];
 export type SourcePatch = Schemas["SourcePatch"];
 export type Region = Schemas["RegionOut"];
+export type StockRow = Schemas["StockRowOut"];
+export type MarketOverview = Schemas["MarketOverviewOut"];
+export type Chart = Schemas["ChartOut"];
+export type ChartRange = "1d" | "1w" | "1m" | "3m" | "ytd" | "1y" | "5y";
 export type WatchItem = Schemas["WatchItemOut"];
 export type WatchItemIn = Schemas["WatchItemIn"];
 export type WatchItemPatch = Schemas["WatchItemPatch"];
@@ -94,6 +98,10 @@ export const api = {
   regions: (sectionId: number) => request<Region[]>(`/sections/${sectionId}/regions`),
   setRegion: (sectionId: number, slug: string, enabled: boolean) =>
     request<Region>(`/sections/${sectionId}/regions/${slug}`, json("PUT", { enabled })),
+
+  market: (sectionId: number) => request<MarketOverview>(`/sections/${sectionId}/market`),
+  chart: (symbol: string, range: ChartRange) =>
+    request<Chart>(`/market/chart?${new URLSearchParams({ symbol, range })}`),
 
   watchItems: (sectionId: number) => request<WatchItem[]>(`/sections/${sectionId}/watch-items`),
   createWatchItem: (sectionId: number, body: WatchItemIn) =>

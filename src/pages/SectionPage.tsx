@@ -3,6 +3,7 @@ import type { Section } from "../api/client";
 import { useArticles, useRegionMutation, useRegions, useSections } from "../api/hooks";
 import { ArticleList } from "../components/ArticleList";
 import { ErrorBox, Loading } from "../components/Layout";
+import { StockScreen } from "../components/StockScreen";
 
 const RANGES = [
   { hours: 24, label: "Idag" },
@@ -34,6 +35,8 @@ export function SectionPage() {
       {section?.kind === "regional" && (
         <RegionBar section={section} sourceId={sourceId} onSelect={(id) => update("source", id == null ? null : String(id))} />
       )}
+      {section?.kind === "economy" && <StockScreen section={section} />}
+      {section?.kind === "economy" && <h2 className="sidebar-title">Nyheter</h2>}
       <div className="toolbar">
         <div className="segmented" role="group" aria-label="Tidsperiod">
           {RANGES.map((r) => (

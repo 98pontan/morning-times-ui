@@ -165,6 +165,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sections/{section_id}/market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Market Overview
+         * @description Prices and development for the section's watched stocks and its reference index (cached ~2 min).
+         */
+        get: operations["market_overview_api_sections__section_id__market_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/chart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Market Chart */
+        get: operations["market_chart_api_market_chart_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sections/{section_id}/watch-items": {
         parameters: {
             query?: never;
@@ -425,10 +462,40 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** ChartOut */
+        ChartOut: {
+            /** Symbol */
+            symbol: string;
+            /** Range */
+            range: string;
+            /** Points */
+            points: components["schemas"]["ChartPointOut"][];
+        };
+        /** ChartPointOut */
+        ChartPointOut: {
+            /**
+             * T
+             * Format: date-time
+             */
+            t: string;
+            /** Close */
+            close: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** MarketOverviewOut */
+        MarketOverviewOut: {
+            index: components["schemas"]["StockRowOut"] | null;
+            /** Stocks */
+            stocks: components["schemas"]["StockRowOut"][];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** RegionOut */
         RegionOut: {
@@ -561,6 +628,46 @@ export interface components {
             url?: string | null;
             /** Enabled */
             enabled?: boolean | null;
+        };
+        /** StockRowOut */
+        StockRowOut: {
+            /** Name */
+            name: string;
+            /** Symbol */
+            symbol: string;
+            /** Watch Item Id */
+            watch_item_id?: number | null;
+            /**
+             * Currency
+             * @default
+             */
+            currency: string;
+            /** Last */
+            last?: number | null;
+            /** Change */
+            change?: number | null;
+            /** Change Pct */
+            change_pct?: number | null;
+            /** Returns */
+            returns?: {
+                [key: string]: number | null;
+            };
+            /** High 52W */
+            high_52w?: number | null;
+            /** Low 52W */
+            low_52w?: number | null;
+            /** Volume */
+            volume?: number | null;
+            /** Turnover */
+            turnover?: number | null;
+            /** Earnings Date */
+            earnings_date?: string | null;
+            /** As Of */
+            as_of?: string | null;
+            /** Spark */
+            spark?: number[];
+            /** Error */
+            error?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1032,6 +1139,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RegionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    market_overview_api_sections__section_id__market_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOverviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    market_chart_api_market_chart_get: {
+        parameters: {
+            query: {
+                /** @description Yahoo symbol, e.g. VOLV-B.ST or ^OMX */
+                symbol: string;
+                /** @description One of 1d, 1w, 1m, 3m, ytd, 1y, 5y */
+                range?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartOut"];
                 };
             };
             /** @description Validation Error */

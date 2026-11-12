@@ -48,13 +48,21 @@ function GeneralPanel({ section }: { section: Section }) {
   const [name, setName] = useState(section.name);
   const [threshold, setThreshold] = useState(String(section.settings.move_threshold_pct ?? 5));
   const [noticeDays, setNoticeDays] = useState(String(section.settings.earnings_notice_days ?? 1));
+  const [indexSymbol, setIndexSymbol] = useState(String(section.settings.index_symbol ?? "^OMX"));
+  const [indexName, setIndexName] = useState(String(section.settings.index_name ?? ""));
   useEffect(() => setName(section.name), [section.name]);
 
   const save = (e: FormEvent) => {
     e.preventDefault();
     const settings =
       section.kind === "economy"
-        ? { ...section.settings, move_threshold_pct: Number(threshold), earnings_notice_days: Number(noticeDays) }
+        ? {
+            ...section.settings,
+            move_threshold_pct: Number(threshold),
+            earnings_notice_days: Number(noticeDays),
+            index_symbol: indexSymbol.trim(),
+            index_name: indexName.trim(),
+          }
         : section.settings;
     update.mutate({ id: section.id, body: { name, settings } });
   };
@@ -76,6 +84,14 @@ function GeneralPanel({ section }: { section: Section }) {
             <label>
               Rapportlarm dagar innan
               <input type="number" min="0" max="14" value={noticeDays} onChange={(e) => setNoticeDays(e.target.value)} />
+            </label>
+            <label>
+              Index i börsgrafen (Yahoo, tomt = inget)
+              <input value={indexSymbol} onChange={(e) => setIndexSymbol(e.target.value)} placeholder="^OMX" />
+            </label>
+            <label>
+              Indexets namn
+              <input value={indexName} onChange={(e) => setIndexName(e.target.value)} placeholder="OMX Stockholm 30" />
             </label>
           </>
         )}
