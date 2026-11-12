@@ -1,0 +1,102 @@
+// React Query hooks: caching, loading states and refetching after changes.
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ApiError, api } from "./client";
+import type { SectionIn, SectionPatch, SourceIn, SourcePatch, WatchItemIn, WatchItemPatch } from "./client";
+
+export const keys = {
+  config: ["config"] as const,
+  kinds: ["section-kinds"] as const,
+  sections: ["sections"] as const,
+  sources: (id: number) => ["sections", id, "sources"] as const,
+  watchItems: (id: number) => ["sections", id, "watch-items"] as const,
+  articles: ["articles"] as const,
+  briefs: ["briefs"] as const,
+  alerts: ["alerts"] as const,
+};
+
+export const useConfig = () => useQuery({ queryKey: keys.config, queryFn: api.config });
+export const useSectionKinds = () => useQuery({ queryKey: keys.kinds, queryFn: api.sectionKinds, staleTime: Infinity });
+export const useSections = () => useQuery({ queryKey: keys.sections, queryFn: api.sections });
+export const useSources = (sectionId: number) =>
+  useQuery({ queryKey: keys.sources(sectionId), queryFn: () => api.sources(sectionId) });
+export const useWatchItems = (sectionId: number) =>
+  useQuery({ queryKey: keys.watchItems(sectionId), queryFn: () => api.watchItems(sectionId) });
+
+export const useArticles = (params: { section?: string; watchedOnly?: boolean; hours?: number }) =>
+  useQuery({
+    queryKey: [...keys.articles, params],
+    queryFn: () => api.articles(params),
+    refetchInterval: 5 * 60_000, // new articles arrive every 15 minutes
+  });
+
+export const useAlerts = () => useQuery({ queryKey: keys.alerts, queryFn: () => api.alerts(10), refetchInterval: 5 * 60_000 });
+export const useBriefs = () => useQuery({ queryKey: keys.briefs, queryFn: () => api.briefs() });
+
+/** The brief for a day, or the latest one. Resolves to null (not an error) when none exists yet. */
+export const useBrief = (day?: string) =>
+  useQuery({
+    queryKey: [...keys.briefs, day ?? "latest"],
+    queryFn: async () => {
+      try {
+        return day ? await api.brief(day) : await api.latestBrief();
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) return null;
+        throw e;
+      }
+    },
+  });
+
+function useInvalidate() {
+  const qc = useQueryClient();
+  return (...queryKeys: readonly (readonly unknown[])[]) =>
+    Promise.all(queryKeys.map((queryKey) => qc.invalidateQueries({ queryKey })));
+}
+
+export function useSectionMutations() {
+  const invalidate = useInvalidate();
+  const done = () => invalidate(keys.sections, keys.articles);
+  return {
+    create: useMutation({ mutationFn: (body: SectionIn) => api.createSection(body), onSuccess: done }),
+    update: useMutation({
+      mutationFn: ({ id, body }: { id: number; body: SectionPatch }) => api.updateSection(id, body),
+      onSuccess: done,
+    }),
+    remove: useMutation({ mutationFn: (id: number) => api.deleteSection(id), onSuccess: done }),
+  };
+}
+
+export function useSourceMutations(sectionId: number) {
+  const invalidate = useInvalidate();
+  const done = () => invalidate(keys.sources(sectionId));
+  return {
+    create: useMutation({ mutationFn: (body: SourceIn) => api.createSource(sectionId, body), onSuccess: done }),
+    update: useMutation({
+      mutationFn: ({ id, body }: { id: number; body: SourcePatch }) => api.updateSource(id, body),
+      onSuccess: done,
+    }),
+    remove: useMutation({ mutationFn: (id: number) => api.deleteSource(id), onSuccess: done }),
+  };
+}
+
+export function useWatchItemMutations(sectionId: number) {
+  const invalidate = useInvalidate();
+  // Changing watch items re-tags recent articles on the backend.
+  const done = () => invalidate(keys.watchItems(sectionId), keys.articles);
+  return {
+    create: useMutation({ mutationFn: (body: WatchItemIn) => api.createWatchItem(sectionId, body), onSuccess: done }),
+    update: useMutation({
+      mutationFn: ({ id, body }: { id: number; body: WatchItemPatch }) => api.updateWatchItem(id, body),
+      onSuccess: done,
+    }),
+    remove: useMutation({ mutationFn: (id: number) => api.deleteWatchItem(id), onSuccess: done }),
+  };
+}
+
+export function useJobs() {
+  const invalidate = useInvalidate();
+  return {
+    ingest: useMutation({ mutationFn: api.runIngest, onSuccess: () => invalidate(keys.articles, keys.sections) }),
+    alerts: useMutation({ mutationFn: api.runAlerts, onSuccess: () => invalidate(keys.alerts, keys.articles) }),
+    brief: useMutation({ mutationFn: () => api.generateBrief(false), onSuccess: () => invalidate(keys.briefs) }),
+  };
+}

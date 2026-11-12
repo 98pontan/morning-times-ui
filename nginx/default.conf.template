@@ -1,0 +1,39 @@
+# Rendered at container start by the nginx image (envsubst on /etc/nginx/templates/*.template).
+# BACKEND_URL: the morning-times API, e.g. http://morning-times.morning-times.svc.cluster.local
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    include /etc/nginx/security-headers.conf;
+
+    # API calls go to the backend. Writing a brief can take a while.
+    location /api/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+    }
+
+    # Health of the UI container itself (used by Kubernetes probes)
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # Built assets have content hashes in their names: cache them forever
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        include /etc/nginx/security-headers.conf;
+    }
+
+    # Single-page app: unknown paths serve index.html so client-side routes work on reload
+    location / {
+        try_files $uri /index.html;
+        add_header Cache-Control "no-cache";
+        include /etc/nginx/security-headers.conf;
+    }
+}
