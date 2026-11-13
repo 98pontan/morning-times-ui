@@ -21,6 +21,14 @@ export type ForecastStep = Schemas["ForecastStepOut"];
 export type DayForecast = Schemas["DayForecastOut"];
 export type PlaceForecast = Schemas["PlaceForecastOut"];
 export type WeatherOverview = Schemas["WeatherOverviewOut"];
+export type WeatherMap = Schemas["WeatherMapOut"];
+export type MapRegion = Schemas["MapRegionOut"];
+export type EnergyOverview = Schemas["EnergyOverviewOut"];
+export type ZonePrices = Schemas["ZonePricesOut"];
+export type EnergyLive = Schemas["LiveOut"];
+export type Reactor = Schemas["ReactorOut"];
+export type EnergyOutlook = Schemas["EnergyOutlookOut"];
+export type OutlookDay = Schemas["OutlookDayOut"];
 export type ChartRange = "1d" | "1w" | "1m" | "3m" | "ytd" | "1y" | "5y";
 export type WatchItem = Schemas["WatchItemOut"];
 export type WatchItemIn = Schemas["WatchItemIn"];
@@ -135,6 +143,9 @@ export const api = {
     request<Chart>(`/market/chart?${new URLSearchParams({ symbol, range })}`),
 
   weather: (sectionId: number) => request<WeatherOverview>(`/sections/${sectionId}/weather`),
+  weatherMap: () => request<WeatherMap>("/weather/map"),
+  energy: (sectionId: number) => request<EnergyOverview>(`/sections/${sectionId}/energy`),
+  energyOutlook: (sectionId: number) => request<EnergyOutlook>(`/sections/${sectionId}/energy/outlook`),
   warningAreas: (sectionId: number) => request<WarningArea[]>(`/sections/${sectionId}/warning-areas`),
   setWarningArea: (sectionId: number, areaId: number, body: { enabled: boolean; levels?: WarningLevel[] }) =>
     request<WarningArea>(`/sections/${sectionId}/warning-areas/${areaId}`, json("PUT", body)),

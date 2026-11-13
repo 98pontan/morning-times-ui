@@ -221,3 +221,106 @@ input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--rule); 
 .level-chip { display: inline-flex; gap: 4px; align-items: center; font-size: 0.8rem; border-left: 4px solid var(--muted); background: var(--paper); border-radius: 0 999px 999px 0; padding: 0 8px 0 4px; cursor: pointer; }
 .level-chip input { margin: 0; }
 .brief-weather p { margin: 4px 0; }
+
+/* Maps and charts: categorical slots (fixed order) and scale colours, light and dark. */
+:root {
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100; --series-5: #e87ba4;
+  --scale-neutral: #f0efec; --scale-missing: #d9d6ce;
+  --status-good: #0ca30c; --status-critical: #d03b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181;
+    --scale-neutral: #383835; --scale-missing: #2a2925;
+  }
+}
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sweden-map { width: 100%; height: auto; display: block; max-height: 860px; }
+.county { stroke: var(--surface); stroke-width: 1; stroke-linejoin: round; cursor: pointer; outline: none; }
+.county:hover { opacity: 0.85; }
+.county:focus-visible { stroke: var(--ink); stroke-width: 2.5; }
+.county.has-warning { stroke-width: 3.5; }
+.county.has-warning.level-yellow { stroke: var(--level-yellow); }
+.county.has-warning.level-orange { stroke: var(--level-orange); }
+.county.has-warning.level-red { stroke: var(--level-red); }
+.county-outline { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.map-label { font-family: var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.map-temp { font-size: 25px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.map-dot { fill: var(--ink); stroke: var(--surface); stroke-width: 1.5; }
+.zone-name { font-size: 34px; font-weight: 700; }
+.zone-price { font-size: 28px; font-variant-numeric: tabular-nums; }
+.flow-label { font-size: 22px; font-variant-numeric: tabular-nums; }
+.flow line { stroke: var(--ink); stroke-width: 3.5; }
+.flow-value { font-weight: 700; }
+.flow.idle line { stroke: var(--muted); stroke-dasharray: 3 3; }
+.arrow-head { fill: var(--ink); }
+.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 28px; align-items: start; }
+@media (max-width: 720px) { .map-layout { grid-template-columns: 1fr; } .map-box { max-width: 420px; margin: 0 auto; width: 100%; } }
+.map-legend { display: flex; flex-wrap: wrap; gap: 2px 10px; list-style: none; padding: 0; margin: 8px 0; }
+.map-legend li, .legend-list li { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; border: 1px solid var(--rule); }
+.map-time { text-transform: capitalize; font-size: 1.3rem; }
+.day-buttons { flex-wrap: wrap; margin: 12px 0 4px; }
+.day-buttons button { text-transform: capitalize; padding: 4px 10px; }
+.time-slider { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; }
+.time-slider input { flex: 1; padding: 0; accent-color: var(--accent); }
+.county-select { display: flex; flex-direction: column; gap: 4px; color: var(--muted); max-width: 260px; }
+.place-name { font-size: 1.6rem; margin: 12px 0 4px; }
+.now-grid { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 8px 0; }
+.now-grid > div { display: contents; }
+.now-grid dt { color: var(--muted); }
+.now-grid dd { margin: 0; }
+.now-temp dd { grid-column: 1 / -1; font-family: var(--serif); font-size: 2.6rem; font-weight: 700; line-height: 1.1; }
+.warning-badge { border-left: 4px solid; padding-left: 8px; }
+.forecast-charts { position: relative; margin: 8px 0 32px; cursor: crosshair; touch-action: pan-y; padding-top: 36px; }
+.fc-panel { position: relative; margin: 0 0 6px; }
+.fc-panel svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.fc-title { position: absolute; left: 0; top: 0; background: var(--surface); padding: 0 4px; z-index: 1; }
+.fc-axis { position: absolute; right: 0; font-size: 0.72rem; color: var(--muted); background: var(--surface); padding: 0 3px; font-variant-numeric: tabular-nums; }
+.fc-axis-max { top: 0; }
+.fc-axis-min { bottom: 0; }
+.fc-grid { stroke: var(--rule); stroke-width: 1; }
+.fc-zero { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; }
+.fc-line { stroke-width: 2; stroke-linejoin: round; }
+.fc-line.temp { stroke: var(--series-2); }
+.fc-line.wind { stroke: var(--series-3); }
+.fc-line.gust { stroke: var(--series-3); stroke-dasharray: 3 3; opacity: 0.7; stroke-width: 1.5; }
+.fc-bars rect { fill: var(--series-1); }
+.fc-days { position: relative; height: 1.4em; }
+.fc-days span { position: absolute; transform: translateX(-50%); white-space: nowrap; text-transform: capitalize; }
+.forecast-tip {
+  position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; white-space: nowrap; z-index: 2;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 2px 8px; display: flex; gap: 10px; font-size: 0.8rem;
+}
+.forecast-tip.start { transform: none; }
+.forecast-tip.end { transform: translateX(-100%); }
+
+/* Electricity */
+.energy { margin-bottom: 32px; }
+.county.in-zone { stroke: var(--ink); stroke-width: 0.6; }
+.production .big-number { font-family: var(--serif); font-size: 2rem; font-weight: 700; margin: 0 0 8px; }
+.stack-bar { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+.stack-bar span { display: block; height: 100%; }
+.legend-list { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 4px; }
+.legend-list li { display: grid; grid-template-columns: 12px 1fr auto 3.5em; gap: 8px; }
+.energy-stats { margin-top: 12px; }
+.price-stats { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 12px 0; }
+.price-stats dt { color: var(--muted); font-size: 0.8rem; }
+.price-stats dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.price-chart { height: 180px; color: var(--ink); }
+.price-bar { fill: #f08a5a; }
+.price-bar.now { fill: var(--ink); }
+.price-bar.hover { opacity: 0.75; }
+.outlook-headline { font-size: 1.6rem; margin: 4px 0 8px; }
+.outlook-text { font-family: var(--serif); font-size: 1.12rem; }
+.outlook-days { list-style: none; padding: 0; margin: 12px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.outlook-day { display: flex; flex-direction: column; gap: 2px; background: var(--paper); border-radius: 6px; padding: 8px 10px; border-top: 4px solid var(--muted); }
+.outlook-day-name { text-transform: capitalize; }
+.outlook-day.level-high { border-top-color: var(--status-critical); }
+.outlook-day.level-low { border-top-color: var(--status-good); }
+.level-badge { font-size: 0.85rem; font-weight: 600; }
+.strong { font-weight: 600; }
+.reactor-off { color: var(--danger); }
+.reactor-partial { color: var(--warn); }
+.reactor-on { color: var(--up); }
+.table.reactors td, .table.reactors th { padding: 6px 8px; }

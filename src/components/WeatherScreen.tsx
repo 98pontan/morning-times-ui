@@ -1,8 +1,10 @@
-// Weather section: SMHI warnings for the followed areas, then a forecast per followed place.
+// Weather section: a temperature map of Sweden, SMHI warnings for the followed areas, then a forecast per followed place.
 import { Link } from "react-router";
 import type { PlaceForecast, Section, WeatherWarning } from "../api/client";
 import { useWeather } from "../api/hooks";
-import { compass, dayLabel, formatMm, formatTemp, hourLabel, period, symbolIcon } from "../lib/weather";
+import { compass, formatMm, formatTemp, hourLabel, period, symbolIcon } from "../lib/weather";
+import { DaysTable } from "./DaysTable";
+import { WeatherMap } from "./WeatherMap";
 import { ErrorBox, Loading } from "./Layout";
 
 export function WeatherScreen({ section }: { section: Section }) {
@@ -11,8 +13,10 @@ export function WeatherScreen({ section }: { section: Section }) {
   if (weather.error) return <ErrorBox error={weather.error} />;
   const { places, warnings, updated_at, error } = weather.data;
 
+  const home = places.find((p) => !p.error);
   return (
     <section className="weather" aria-label="Väder">
+      <WeatherMap near={home ? { lat: home.lat, lon: home.lon } : undefined} />
       <h2 className="sidebar-title">Varningar från SMHI</h2>
       {error && <ErrorBox error={error} />}
       {warnings.length === 0 && !error && <p className="muted">Inga varningar för de områden du följer.</p>}
@@ -103,36 +107,7 @@ function PlaceCard({ place }: { place: PlaceForecast }) {
         </ol>
       )}
 
-      {days.length > 0 && (
-        <div className="table-scroll">
-          <table className="table days">
-            <thead>
-              <tr>
-                <th>Dag</th>
-                <th />
-                <th className="num">Min/max</th>
-                <th className="num">Nederbörd</th>
-                <th className="num hide-xs">Vind</th>
-              </tr>
-            </thead>
-            <tbody>
-              {days.map((d) => (
-                <tr key={d.date}>
-                  <td className="nowrap">{dayLabel(d.date)}</td>
-                  <td>
-                    {symbolIcon(d.symbol)} <span className="hide-xs">{d.symbol_text}</span>
-                  </td>
-                  <td className="num">
-                    {formatTemp(d.min_temp)} / {formatTemp(d.max_temp)}
-                  </td>
-                  <td className="num">{formatMm(d.precipitation)} mm</td>
-                  <td className="num hide-xs">{d.max_wind != null ? `${Math.round(d.max_wind)} m/s` : "–"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {days.length > 0 && <DaysTable days={days} />}
     </div>
   );
 }

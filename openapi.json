@@ -742,6 +742,105 @@
     }
    }
   },
+  "/api/weather/map": {
+   "get": {
+    "summary": "Weather Map",
+    "description": "SMHI forecasts for one town per county and the highest active warning per county (cached ~10 min).",
+    "operationId": "weather_map_api_weather_map_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WeatherMapOut"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sections/{section_id}/energy": {
+   "get": {
+    "summary": "Energy Overview",
+    "description": "Spot prices for SE1-SE4, near-live production and flows, and nuclear status (cached 5-60 min).",
+    "operationId": "energy_overview_api_sections__section_id__energy_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EnergyOverviewOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sections/{section_id}/energy/outlook": {
+   "get": {
+    "summary": "Energy Outlook",
+    "description": "Weekly price outlook from weather, wind and nuclear availability (text cached ~3 h).",
+    "operationId": "energy_outlook_api_sections__section_id__energy_outlook_get",
+    "parameters": [
+     {
+      "name": "section_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Section Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EnergyOutlookOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/sections/{section_id}/watch-items": {
    "get": {
     "summary": "List Watch Items",
@@ -1580,6 +1679,130 @@
     ],
     "title": "DayForecastOut"
    },
+   "EnergyOutlookOut": {
+    "properties": {
+     "zone": {
+      "type": "string",
+      "title": "Zone"
+     },
+     "days": {
+      "items": {
+       "$ref": "#/components/schemas/OutlookDayOut"
+      },
+      "type": "array",
+      "title": "Days"
+     },
+     "headline": {
+      "type": "string",
+      "title": "Headline"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "generator": {
+      "type": "string",
+      "title": "Generator"
+     },
+     "recent_price": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Recent Price"
+     },
+     "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Generated At"
+     },
+     "errors": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Errors"
+     }
+    },
+    "type": "object",
+    "required": [
+     "zone",
+     "days",
+     "headline",
+     "text",
+     "generator",
+     "recent_price",
+     "generated_at"
+    ],
+    "title": "EnergyOutlookOut"
+   },
+   "EnergyOverviewOut": {
+    "properties": {
+     "zone": {
+      "type": "string",
+      "title": "Zone"
+     },
+     "zones": {
+      "items": {
+       "$ref": "#/components/schemas/ZonePricesOut"
+      },
+      "type": "array",
+      "title": "Zones"
+     },
+     "live": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LiveOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "reactors": {
+      "items": {
+       "$ref": "#/components/schemas/ReactorOut"
+      },
+      "type": "array",
+      "title": "Reactors"
+     },
+     "nuclear_available": {
+      "type": "number",
+      "title": "Nuclear Available"
+     },
+     "nuclear_capacity": {
+      "type": "integer",
+      "title": "Nuclear Capacity"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "errors": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Errors"
+     }
+    },
+    "type": "object",
+    "required": [
+     "zone",
+     "zones",
+     "live",
+     "reactors",
+     "nuclear_available",
+     "nuclear_capacity",
+     "updated_at"
+    ],
+    "title": "EnergyOverviewOut"
+   },
    "ForecastStepOut": {
     "properties": {
      "time": {
@@ -1689,6 +1912,141 @@
     "type": "object",
     "title": "HTTPValidationError"
    },
+   "LiveOut": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Time"
+     },
+     "production": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Production"
+     },
+     "load": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Load"
+     },
+     "net_export": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Net Export"
+     },
+     "flows": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Flows"
+     },
+     "flows_time": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flows Time"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time",
+     "production",
+     "load",
+     "net_export",
+     "flows"
+    ],
+    "title": "LiveOut"
+   },
+   "MapRegionOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "place": {
+      "type": "string",
+      "title": "Place"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "warning_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warning Level"
+     },
+     "steps": {
+      "items": {
+       "$ref": "#/components/schemas/ForecastStepOut"
+      },
+      "type": "array",
+      "title": "Steps"
+     },
+     "days": {
+      "items": {
+       "$ref": "#/components/schemas/DayForecastOut"
+      },
+      "type": "array",
+      "title": "Days"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "place",
+     "lat",
+     "lon"
+    ],
+    "title": "MapRegionOut"
+   },
    "MarketOverviewOut": {
     "properties": {
      "index": {
@@ -1721,6 +2079,99 @@
      "updated_at"
     ],
     "title": "MarketOverviewOut"
+   },
+   "OutlookDayOut": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "temperature": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature"
+     },
+     "normal_temperature": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Normal Temperature"
+     },
+     "wind": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind"
+     },
+     "nuclear_available": {
+      "type": "number",
+      "title": "Nuclear Available"
+     },
+     "nuclear_out": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Nuclear Out"
+     },
+     "price": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Price"
+     },
+     "level": {
+      "type": "string",
+      "enum": [
+       "low",
+       "normal",
+       "high"
+      ],
+      "title": "Level"
+     },
+     "reasons": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Reasons"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "temperature",
+     "normal_temperature",
+     "wind",
+     "nuclear_available",
+     "nuclear_out",
+     "price",
+     "level",
+     "reasons"
+    ],
+    "title": "OutlookDayOut"
    },
    "PlaceForecastOut": {
     "properties": {
@@ -1790,6 +2241,70 @@
      "lon"
     ],
     "title": "PlaceForecastOut"
+   },
+   "PricePointOut": {
+    "properties": {
+     "start": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Start"
+     },
+     "price": {
+      "type": "number",
+      "title": "Price"
+     }
+    },
+    "type": "object",
+    "required": [
+     "start",
+     "price"
+    ],
+    "title": "PricePointOut"
+   },
+   "ReactorOut": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "capacity": {
+      "type": "integer",
+      "title": "Capacity"
+     },
+     "available": {
+      "type": "number",
+      "title": "Available"
+     },
+     "reason": {
+      "type": "string",
+      "title": "Reason",
+      "default": ""
+     },
+     "back_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Back At"
+     },
+     "planned": {
+      "type": "boolean",
+      "title": "Planned",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "capacity",
+     "available"
+    ],
+    "title": "ReactorOut"
    },
    "RegionOut": {
     "properties": {
@@ -2696,6 +3211,39 @@
     "type": "object",
     "title": "WatchItemPatch"
    },
+   "WeatherMapOut": {
+    "properties": {
+     "regions": {
+      "items": {
+       "$ref": "#/components/schemas/MapRegionOut"
+      },
+      "type": "array",
+      "title": "Regions"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     }
+    },
+    "type": "object",
+    "required": [
+     "regions",
+     "updated_at"
+    ],
+    "title": "WeatherMapOut"
+   },
    "WeatherOverviewOut": {
     "properties": {
      "places": {
@@ -2736,6 +3284,71 @@
      "updated_at"
     ],
     "title": "WeatherOverviewOut"
+   },
+   "ZonePricesOut": {
+    "properties": {
+     "zone": {
+      "type": "string",
+      "title": "Zone"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "now": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Now"
+     },
+     "today": {
+      "items": {
+       "$ref": "#/components/schemas/PricePointOut"
+      },
+      "type": "array",
+      "title": "Today"
+     },
+     "tomorrow": {
+      "items": {
+       "$ref": "#/components/schemas/PricePointOut"
+      },
+      "type": "array",
+      "title": "Tomorrow"
+     },
+     "avg_today": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Today"
+     },
+     "avg_tomorrow": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Tomorrow"
+     }
+    },
+    "type": "object",
+    "required": [
+     "zone",
+     "name"
+    ],
+    "title": "ZonePricesOut"
    }
   }
  }

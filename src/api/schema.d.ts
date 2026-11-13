@@ -262,6 +262,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/weather/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Weather Map
+         * @description SMHI forecasts for one town per county and the highest active warning per county (cached ~10 min).
+         */
+        get: operations["weather_map_api_weather_map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sections/{section_id}/energy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Energy Overview
+         * @description Spot prices for SE1-SE4, near-live production and flows, and nuclear status (cached 5-60 min).
+         */
+        get: operations["energy_overview_api_sections__section_id__energy_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sections/{section_id}/energy/outlook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Energy Outlook
+         * @description Weekly price outlook from weather, wind and nuclear availability (text cached ~3 h).
+         */
+        get: operations["energy_outlook_api_sections__section_id__energy_outlook_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sections/{section_id}/watch-items": {
         parameters: {
             query?: never;
@@ -561,6 +621,49 @@ export interface components {
             /** Max Wind */
             max_wind: number | null;
         };
+        /** EnergyOutlookOut */
+        EnergyOutlookOut: {
+            /** Zone */
+            zone: string;
+            /** Days */
+            days: components["schemas"]["OutlookDayOut"][];
+            /** Headline */
+            headline: string;
+            /** Text */
+            text: string;
+            /** Generator */
+            generator: string;
+            /** Recent Price */
+            recent_price: number | null;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Errors */
+            errors?: string[];
+        };
+        /** EnergyOverviewOut */
+        EnergyOverviewOut: {
+            /** Zone */
+            zone: string;
+            /** Zones */
+            zones: components["schemas"]["ZonePricesOut"][];
+            live: components["schemas"]["LiveOut"] | null;
+            /** Reactors */
+            reactors: components["schemas"]["ReactorOut"][];
+            /** Nuclear Available */
+            nuclear_available: number;
+            /** Nuclear Capacity */
+            nuclear_capacity: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Errors */
+            errors?: string[];
+        };
         /** ForecastStepOut */
         ForecastStepOut: {
             /**
@@ -590,6 +693,49 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LiveOut */
+        LiveOut: {
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /** Production */
+            production: {
+                [key: string]: number;
+            };
+            /** Load */
+            load: number | null;
+            /** Net Export */
+            net_export: number | null;
+            /** Flows */
+            flows: {
+                [key: string]: number;
+            };
+            /** Flows Time */
+            flows_time?: string | null;
+        };
+        /** MapRegionOut */
+        MapRegionOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Place */
+            place: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Warning Level */
+            warning_level?: string | null;
+            /** Steps */
+            steps?: components["schemas"]["ForecastStepOut"][];
+            /** Days */
+            days?: components["schemas"]["DayForecastOut"][];
+            /** Error */
+            error?: string | null;
+        };
         /** MarketOverviewOut */
         MarketOverviewOut: {
             index: components["schemas"]["StockRowOut"] | null;
@@ -600,6 +746,33 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** OutlookDayOut */
+        OutlookDayOut: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Temperature */
+            temperature: number | null;
+            /** Normal Temperature */
+            normal_temperature: number | null;
+            /** Wind */
+            wind: number | null;
+            /** Nuclear Available */
+            nuclear_available: number;
+            /** Nuclear Out */
+            nuclear_out: string[];
+            /** Price */
+            price: number | null;
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "low" | "normal" | "high";
+            /** Reasons */
+            reasons: string[];
         };
         /** PlaceForecastOut */
         PlaceForecastOut: {
@@ -618,6 +791,37 @@ export interface components {
             days?: components["schemas"]["DayForecastOut"][];
             /** Error */
             error?: string | null;
+        };
+        /** PricePointOut */
+        PricePointOut: {
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /** Price */
+            price: number;
+        };
+        /** ReactorOut */
+        ReactorOut: {
+            /** Name */
+            name: string;
+            /** Capacity */
+            capacity: number;
+            /** Available */
+            available: number;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /** Back At */
+            back_at?: string | null;
+            /**
+             * Planned
+             * @default true
+             */
+            planned: boolean;
         };
         /** RegionOut */
         RegionOut: {
@@ -914,6 +1118,18 @@ export interface components {
             /** Enabled */
             enabled?: boolean | null;
         };
+        /** WeatherMapOut */
+        WeatherMapOut: {
+            /** Regions */
+            regions: components["schemas"]["MapRegionOut"][];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Error */
+            error?: string | null;
+        };
         /** WeatherOverviewOut */
         WeatherOverviewOut: {
             /** Places */
@@ -927,6 +1143,23 @@ export interface components {
             updated_at: string;
             /** Error */
             error?: string | null;
+        };
+        /** ZonePricesOut */
+        ZonePricesOut: {
+            /** Zone */
+            zone: string;
+            /** Name */
+            name: string;
+            /** Now */
+            now?: number | null;
+            /** Today */
+            today?: components["schemas"]["PricePointOut"][];
+            /** Tomorrow */
+            tomorrow?: components["schemas"]["PricePointOut"][];
+            /** Avg Today */
+            avg_today?: number | null;
+            /** Avg Tomorrow */
+            avg_tomorrow?: number | null;
         };
     };
     responses: never;
@@ -1492,6 +1725,88 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WeatherOverviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    weather_map_api_weather_map_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherMapOut"];
+                };
+            };
+        };
+    };
+    energy_overview_api_sections__section_id__energy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnergyOverviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    energy_outlook_api_sections__section_id__energy_outlook_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnergyOutlookOut"];
                 };
             };
             /** @description Validation Error */

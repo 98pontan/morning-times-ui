@@ -27,6 +27,14 @@ const overview: WeatherOverview = {
     days: [{ date: "2026-11-13", min_temp: 0.6, max_temp: 3.6, precipitation: 4.4, symbol: 18, symbol_text: "Lätt regn", max_wind: 6.3 }],
   }],
 };
+const region = (id: number, name: string, place: string, lat: number, lon: number, temps: number[], warning: string | null = null) => ({
+  id, name, place, lat, lon, warning_level: warning, error: null, days: [],
+  steps: temps.map((t, i) => step(`2026-11-12T${String(15 + i).padStart(2, "0")}:00:00Z`, t)),
+});
+const weatherMap = {
+  updated_at: "2026-11-12T15:00:00+01:00", error: null,
+  regions: [region(1, "Stockholms län", "Stockholm", 59.33, 18.07, [5.3, 4, -2], "ORANGE"), region(12, "Skåne län", "Malmö", 55.6, 13.0, [9, 8, 7])],
+};
 const areas = [
   { id: 1, name: "Stockholms län", kind: "county", watch_item_id: 1, enabled: true, levels: ["YELLOW", "ORANGE"] },
   { id: 12, name: "Skåne län", kind: "county", watch_item_id: null, enabled: false, levels: ["YELLOW", "ORANGE", "RED"] },
@@ -39,6 +47,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
     if (init?.method === "PUT") puts.push({ url, body: JSON.parse(String(init.body)) });
     const body = url.endsWith("/weather") ? overview
+      : url.endsWith("/weather/map") ? weatherMap
       : url.endsWith("/sections") ? [section]
       : url.endsWith("/warning-areas") ? areas
       : url.includes("/warning-areas/") ? areas[0]
@@ -59,10 +68,24 @@ test("shows SMHI warnings and the forecast for followed places", async () => {
   expect(await screen.findByText("Orange varning")).toBeInTheDocument();
   expect(screen.getByText(/Norra Stockholms län/)).toBeInTheDocument();
   expect(screen.getByText(/larmar/)).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "Stockholm" })).toBeInTheDocument();
+  // The place card, and the map's details (it starts at the county closest to the followed place).
+  await waitFor(() => expect(screen.getAllByRole("heading", { name: "Stockholm" })).toHaveLength(2));
   expect(screen.getByRole("list", { name: "Timprognos för Stockholm" }).children).toHaveLength(2);
   expect(screen.getByText("1,3 mm")).toBeInTheDocument();
   expect(screen.getByText("1° / 4°")).toBeInTheDocument();
+});
+
+test("weather map: temperatures at the chosen time and details for the chosen county", async () => {
+  render(wrap(<WeatherScreen section={section} />));
+  const stockholm = await screen.findByRole("button", { name: "Stockholms län: 5° i Stockholm" });
+  expect(stockholm).toHaveAttribute("aria-pressed", "true");
+  expect(stockholm).toHaveClass("has-warning", "level-orange");
+  // Moving the slider two steps on changes every county's temperature.
+  fireEvent.change(screen.getByRole("slider", { name: "Tidpunkt" }), { target: { value: "2" } });
+  expect(screen.getByRole("button", { name: "Stockholms län: -2° i Stockholm" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Skåne län: 7° i Malmö" }));
+  expect(screen.getByRole("heading", { name: "Malmö" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Så ändras vädret i Malmö" })).toBeInTheDocument();
 });
 
 test("settings: follow an area and change which levels are emailed", async () => {

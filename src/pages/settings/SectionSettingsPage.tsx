@@ -58,6 +58,7 @@ function GeneralPanel({ section }: { section: Section }) {
   const [noticeDays, setNoticeDays] = useState(String(section.settings.earnings_notice_days ?? 1));
   const [indexSymbol, setIndexSymbol] = useState(String(section.settings.index_symbol ?? "^OMX"));
   const [indexName, setIndexName] = useState(String(section.settings.index_name ?? ""));
+  const [zone, setZone] = useState(String(section.settings.zone ?? "SE3"));
   useEffect(() => setName(section.name), [section.name]);
 
   const save = (e: FormEvent) => {
@@ -71,7 +72,9 @@ function GeneralPanel({ section }: { section: Section }) {
             index_symbol: indexSymbol.trim(),
             index_name: indexName.trim(),
           }
-        : section.settings;
+        : section.kind === "energy"
+          ? { ...section.settings, zone }
+          : section.settings;
     update.mutate({ id: section.id, body: { name, settings } });
   };
 
@@ -102,6 +105,17 @@ function GeneralPanel({ section }: { section: Section }) {
               <input value={indexName} onChange={(e) => setIndexName(e.target.value)} placeholder="OMX Stockholm 30" />
             </label>
           </>
+        )}
+        {section.kind === "energy" && (
+          <label>
+            Ditt elområde
+            <select value={zone} onChange={(e) => setZone(e.target.value)}>
+              <option value="SE1">SE1 – Luleå</option>
+              <option value="SE2">SE2 – Sundsvall</option>
+              <option value="SE3">SE3 – Stockholm</option>
+              <option value="SE4">SE4 – Malmö</option>
+            </select>
+          </label>
         )}
         <button type="submit" disabled={update.isPending}>
           Spara

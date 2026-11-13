@@ -3,6 +3,7 @@ import type { Section } from "../api/client";
 import { useArticles, useRegionMutation, useRegions, useSections } from "../api/hooks";
 import { ArticleList } from "../components/ArticleList";
 import { ErrorBox, Loading } from "../components/Layout";
+import { EnergyScreen } from "../components/EnergyScreen";
 import { StockScreen } from "../components/StockScreen";
 import { WeatherScreen } from "../components/WeatherScreen";
 
@@ -23,6 +24,8 @@ export function SectionPage() {
   const section = sections.data?.find((s) => s.slug === slug);
   const articles = useArticles({ section: slug, sourceId, hours, watchedOnly });
 
+  const dataOnly = section?.kind === "weather" || section?.kind === "energy";
+
   const update = (key: string, value: string | null) => {
     const next = new URLSearchParams(params);
     if (value === null) next.delete(key);
@@ -39,10 +42,11 @@ export function SectionPage() {
       {section?.kind === "economy" && <StockScreen section={section} />}
       {section?.kind === "economy" && <h2 className="sidebar-title">Nyheter</h2>}
       {section?.kind === "weather" && <WeatherScreen section={section} />}
-      {/* A weather section usually has no news feeds; then there is nothing more to show. */}
-      {(section?.kind !== "weather" || !!articles.data?.length) && (
+      {section?.kind === "energy" && <EnergyScreen section={section} />}
+      {/* Weather and energy sections usually have no news feeds; then there is nothing more to show. */}
+      {(!dataOnly || !!articles.data?.length) && (
         <>
-          {section?.kind === "weather" && <h2 className="sidebar-title">Nyheter</h2>}
+          {dataOnly && <h2 className="sidebar-title">Nyheter</h2>}
           <div className="toolbar">
             <div className="segmented" role="group" aria-label="Tidsperiod">
               {RANGES.map((r) => (

@@ -14,6 +14,9 @@ export const keys = {
   chart: (symbol: string, range: ChartRange) => ["chart", symbol, range] as const,
   weather: (id: number) => ["sections", id, "weather"] as const,
   warningAreas: (id: number) => ["sections", id, "warning-areas"] as const,
+  weatherMap: ["weather-map"] as const,
+  energy: (id: number) => ["sections", id, "energy"] as const,
+  energyOutlook: (id: number) => ["sections", id, "energy", "outlook"] as const,
   articles: ["articles"] as const,
   briefs: ["briefs"] as const,
   alerts: ["alerts"] as const,
@@ -51,6 +54,18 @@ export const useChart = (symbol: string | undefined, range: ChartRange) =>
 /** Forecasts and SMHI warnings for a weather section (cached ~10 min by the backend). */
 export const useWeather = (sectionId: number) =>
   useQuery({ queryKey: keys.weather(sectionId), queryFn: () => api.weather(sectionId), refetchInterval: 10 * 60_000 });
+
+/** Forecast for one town per county, for the weather map (cached ~10 min by the backend). */
+export const useWeatherMap = () =>
+  useQuery({ queryKey: keys.weatherMap, queryFn: api.weatherMap, refetchInterval: 10 * 60_000, staleTime: 5 * 60_000 });
+
+/** Zone prices, near-live production/flows and nuclear status. Production data refreshes every few minutes. */
+export const useEnergy = (sectionId: number) =>
+  useQuery({ queryKey: keys.energy(sectionId), queryFn: () => api.energy(sectionId), refetchInterval: 5 * 60_000 });
+
+/** Weekly price outlook; the text is written at most every few hours, so no polling. */
+export const useEnergyOutlook = (sectionId: number) =>
+  useQuery({ queryKey: keys.energyOutlook(sectionId), queryFn: () => api.energyOutlook(sectionId), staleTime: 30 * 60_000 });
 
 /** SMHI counties and sea districts for a weather section; undefined skips the request. */
 export const useWarningAreas = (sectionId: number | undefined) =>
