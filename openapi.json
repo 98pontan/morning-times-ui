@@ -1,3355 +1,3462 @@
 {
- "openapi": "3.1.0",
- "info": {
-  "title": "The Morning Times",
-  "description": "Configurable news aggregator with a daily AI-written morning brief.",
-  "version": "0.1.0"
- },
- "paths": {
-  "/healthz": {
-   "get": {
-    "summary": "Health",
-    "operationId": "health_healthz_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {}
-       }
-      }
-     }
-    }
-   }
+  "openapi": "3.1.0",
+  "info": {
+    "title": "The Morning Times",
+    "description": "Configurable news aggregator with a daily AI-written morning brief.",
+    "version": "0.1.0"
   },
-  "/api/config": {
-   "get": {
-    "summary": "Show Config",
-    "operationId": "show_config_api_config_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {}
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/section-kinds": {
-   "get": {
-    "summary": "Section Kinds",
-    "operationId": "section_kinds_api_section_kinds_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "items": {
-          "$ref": "#/components/schemas/SectionKindOut"
-         },
-         "type": "array",
-         "title": "Response Section Kinds Api Section Kinds Get"
+  "paths": {
+    "/healthz": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
         }
-       }
       }
-     }
-    }
-   }
-  },
-  "/api/sections": {
-   "get": {
-    "summary": "List Sections",
-    "operationId": "list_sections_api_sections_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "items": {
-          "$ref": "#/components/schemas/SectionOut"
-         },
-         "type": "array",
-         "title": "Response List Sections Api Sections Get"
-        }
-       }
-      }
-     }
-    }
-   },
-   "post": {
-    "summary": "Create Section",
-    "operationId": "create_section_api_sections_post",
-    "requestBody": {
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/SectionIn"
-       }
-      }
-     },
-     "required": true
     },
-    "responses": {
-     "201": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/SectionOut"
+    "/api/auth": {
+      "get": {
+        "summary": "Auth Config",
+        "description": "What the UI needs to log in (public).",
+        "operationId": "auth_config_api_auth_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthConfigOut"
+                }
+              }
+            }
+          }
         }
-       }
       }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}": {
-   "get": {
-    "summary": "Get Section",
-    "operationId": "get_section_api_sections__section_id__get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/SectionOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "patch": {
-    "summary": "Update Section",
-    "operationId": "update_section_api_sections__section_id__patch",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/SectionPatch"
-       }
-      }
-     }
     },
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/SectionOut"
+    "/api/me": {
+      "get": {
+        "summary": "Me",
+        "description": "The logged-in user, or 401 (the UI uses this to check its token).",
+        "operationId": "me_api_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          }
         }
-       }
       }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "delete": {
-    "summary": "Delete Section",
-    "operationId": "delete_section_api_sections__section_id__delete",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "204": {
-      "description": "Successful Response"
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/sources": {
-   "get": {
-    "summary": "List Sources",
-    "operationId": "list_sources_api_sections__section_id__sources_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/SourceOut"
-         },
-         "title": "Response List Sources Api Sections  Section Id  Sources Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "post": {
-    "summary": "Create Source",
-    "operationId": "create_source_api_sections__section_id__sources_post",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/SourceIn"
-       }
-      }
-     }
     },
-    "responses": {
-     "201": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/SourceOut"
+    "/api/config": {
+      "get": {
+        "summary": "Show Config",
+        "operationId": "show_config_api_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
         }
-       }
       }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sources/{source_id}": {
-   "patch": {
-    "summary": "Update Source",
-    "operationId": "update_source_api_sources__source_id__patch",
-    "parameters": [
-     {
-      "name": "source_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Source Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/SourcePatch"
-       }
-      }
-     }
     },
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/SourceOut"
+    "/api/section-kinds": {
+      "get": {
+        "summary": "Section Kinds",
+        "operationId": "section_kinds_api_section_kinds_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SectionKindOut"
+                  },
+                  "type": "array",
+                  "title": "Response Section Kinds Api Section Kinds Get"
+                }
+              }
+            }
+          }
         }
-       }
       }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "delete": {
-    "summary": "Delete Source",
-    "operationId": "delete_source_api_sources__source_id__delete",
-    "parameters": [
-     {
-      "name": "source_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Source Id"
-      }
-     }
-    ],
-    "responses": {
-     "204": {
-      "description": "Successful Response"
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/regions": {
-   "get": {
-    "summary": "List Regions",
-    "operationId": "list_regions_api_sections__section_id__regions_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/RegionOut"
-         },
-         "title": "Response List Regions Api Sections  Section Id  Regions Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/regions/{slug}": {
-   "put": {
-    "summary": "Set Region",
-    "description": "Pick or un-pick a region: adds/enables its feed, or disables it (kept, so it can be re-picked).",
-    "operationId": "set_region_api_sections__section_id__regions__slug__put",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     },
-     {
-      "name": "slug",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string",
-       "title": "Slug"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/RegionPatch"
-       }
-      }
-     }
     },
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/RegionOut"
+    "/api/sections": {
+      "get": {
+        "summary": "List Sections",
+        "operationId": "list_sections_api_sections_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SectionOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Sections Api Sections Get"
+                }
+              }
+            }
+          }
         }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/market": {
-   "get": {
-    "summary": "Market Overview",
-    "description": "Prices and development for the section's watched stocks and its reference index (cached ~2 min).",
-    "operationId": "market_overview_api_sections__section_id__market_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/MarketOverviewOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/market/chart": {
-   "get": {
-    "summary": "Market Chart",
-    "operationId": "market_chart_api_market_chart_get",
-    "parameters": [
-     {
-      "name": "symbol",
-      "in": "query",
-      "required": true,
-      "schema": {
-       "type": "string",
-       "pattern": "^[A-Za-z0-9^=.\\-]{1,32}$",
-       "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX",
-       "title": "Symbol"
       },
-      "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX"
-     },
-     {
-      "name": "range",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y",
-       "default": "1m",
-       "title": "Range"
-      },
-      "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y"
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/ChartOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/warning-areas": {
-   "get": {
-    "summary": "List Warning Areas",
-    "description": "SMHI counties and sea districts, with whether warnings for them are followed and at which levels.",
-    "operationId": "list_warning_areas_api_sections__section_id__warning_areas_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/WarningAreaOut"
-         },
-         "title": "Response List Warning Areas Api Sections  Section Id  Warning Areas Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/warning-areas/{area_id}": {
-   "put": {
-    "summary": "Set Warning Area",
-    "description": "Follow (or stop following) SMHI warnings for an area, and choose which levels are emailed.",
-    "operationId": "set_warning_area_api_sections__section_id__warning_areas__area_id__put",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     },
-     {
-      "name": "area_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Area Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/WarningAreaPatch"
-       }
-      }
-     }
-    },
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/WarningAreaOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/weather": {
-   "get": {
-    "summary": "Weather Overview",
-    "description": "Forecasts for the section's places and current SMHI warnings for its areas (cached ~10 min).",
-    "operationId": "weather_overview_api_sections__section_id__weather_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/WeatherOverviewOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/weather/map": {
-   "get": {
-    "summary": "Weather Map",
-    "description": "SMHI forecasts for one town per county and the highest active warning per county (cached ~10 min).",
-    "operationId": "weather_map_api_weather_map_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/WeatherMapOut"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/energy": {
-   "get": {
-    "summary": "Energy Overview",
-    "description": "Spot prices for SE1-SE4, near-live production and flows, and nuclear status (cached 5-60 min).",
-    "operationId": "energy_overview_api_sections__section_id__energy_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/EnergyOverviewOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/energy/outlook": {
-   "get": {
-    "summary": "Energy Outlook",
-    "description": "Weekly price outlook from weather, wind and nuclear availability (text cached ~3 h).",
-    "operationId": "energy_outlook_api_sections__section_id__energy_outlook_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/EnergyOutlookOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/sections/{section_id}/watch-items": {
-   "get": {
-    "summary": "List Watch Items",
-    "operationId": "list_watch_items_api_sections__section_id__watch_items_get",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/WatchItemOut"
-         },
-         "title": "Response List Watch Items Api Sections  Section Id  Watch Items Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "post": {
-    "summary": "Create Watch Item",
-    "operationId": "create_watch_item_api_sections__section_id__watch_items_post",
-    "parameters": [
-     {
-      "name": "section_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Section Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/WatchItemIn"
-       }
-      }
-     }
-    },
-    "responses": {
-     "201": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/WatchItemOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/watch-items/{item_id}": {
-   "patch": {
-    "summary": "Update Watch Item",
-    "operationId": "update_watch_item_api_watch_items__item_id__patch",
-    "parameters": [
-     {
-      "name": "item_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Item Id"
-      }
-     }
-    ],
-    "requestBody": {
-     "required": true,
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/WatchItemPatch"
-       }
-      }
-     }
-    },
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/WatchItemOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   },
-   "delete": {
-    "summary": "Delete Watch Item",
-    "operationId": "delete_watch_item_api_watch_items__item_id__delete",
-    "parameters": [
-     {
-      "name": "item_id",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "title": "Item Id"
-      }
-     }
-    ],
-    "responses": {
-     "204": {
-      "description": "Successful Response"
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/articles": {
-   "get": {
-    "summary": "List Articles",
-    "operationId": "list_articles_api_articles_get",
-    "parameters": [
-     {
-      "name": "section",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "string"
+      "post": {
+        "summary": "Create Section",
+        "operationId": "create_section_api_sections_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionIn"
+              }
+            }
+          },
+          "required": true
         },
-        {
-         "type": "null"
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
         }
-       ],
-       "description": "Section slug",
-       "title": "Section"
+      }
+    },
+    "/api/sections/{section_id}": {
+      "get": {
+        "summary": "Get Section",
+        "operationId": "get_section_api_sections__section_id__get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       },
-      "description": "Section slug"
-     },
-     {
-      "name": "source_id",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "integer"
+      "patch": {
+        "summary": "Update Section",
+        "operationId": "update_section_api_sections__section_id__patch",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionPatch"
+              }
+            }
+          }
         },
-        {
-         "type": "null"
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
         }
-       ],
-       "description": "Only articles from this source (e.g. one region)",
-       "title": "Source Id"
       },
-      "description": "Only articles from this source (e.g. one region)"
-     },
-     {
-      "name": "watched_only",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "boolean",
-       "default": false,
-       "title": "Watched Only"
-      }
-     },
-     {
-      "name": "hours",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "integer",
-       "maximum": 720,
-       "minimum": 1,
-       "default": 24,
-       "title": "Hours"
-      }
-     },
-     {
-      "name": "limit",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "integer",
-       "maximum": 500,
-       "minimum": 1,
-       "default": 50,
-       "title": "Limit"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/ArticleOut"
-         },
-         "title": "Response List Articles Api Articles Get"
+      "delete": {
+        "summary": "Delete Section",
+        "operationId": "delete_section_api_sections__section_id__delete",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
         }
-       }
       }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
+    },
+    "/api/sections/{section_id}/sources": {
+      "get": {
+        "summary": "List Sources",
+        "operationId": "list_sources_api_sections__section_id__sources_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SourceOut"
+                  },
+                  "title": "Response List Sources Api Sections  Section Id  Sources Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
         }
-       }
+      },
+      "post": {
+        "summary": "Create Source",
+        "operationId": "create_source_api_sections__section_id__sources_post",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
-     }
+    },
+    "/api/sources/{source_id}": {
+      "patch": {
+        "summary": "Update Source",
+        "operationId": "update_source_api_sources__source_id__patch",
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourcePatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Source",
+        "operationId": "delete_source_api_sources__source_id__delete",
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/regions": {
+      "get": {
+        "summary": "List Regions",
+        "operationId": "list_regions_api_sections__section_id__regions_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegionOut"
+                  },
+                  "title": "Response List Regions Api Sections  Section Id  Regions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/regions/{slug}": {
+      "put": {
+        "summary": "Set Region",
+        "description": "Pick or un-pick a region: adds/enables its feed, or disables it (kept, so it can be re-picked).",
+        "operationId": "set_region_api_sections__section_id__regions__slug__put",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/market": {
+      "get": {
+        "summary": "Market Overview",
+        "description": "Prices and development for the section's watched stocks and its reference index (cached ~2 min).",
+        "operationId": "market_overview_api_sections__section_id__market_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOverviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/market/chart": {
+      "get": {
+        "summary": "Market Chart",
+        "operationId": "market_chart_api_market_chart_get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9^=.\\-]{1,32}$",
+              "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX",
+              "title": "Symbol"
+            },
+            "description": "Yahoo symbol, e.g. VOLV-B.ST or ^OMX"
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y",
+              "default": "1m",
+              "title": "Range"
+            },
+            "description": "One of 1d, 1w, 1m, 3m, ytd, 1y, 5y"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChartOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/warning-areas": {
+      "get": {
+        "summary": "List Warning Areas",
+        "description": "SMHI counties and sea districts, with whether warnings for them are followed and at which levels.",
+        "operationId": "list_warning_areas_api_sections__section_id__warning_areas_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WarningAreaOut"
+                  },
+                  "title": "Response List Warning Areas Api Sections  Section Id  Warning Areas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/warning-areas/{area_id}": {
+      "put": {
+        "summary": "Set Warning Area",
+        "description": "Follow (or stop following) SMHI warnings for an area, and choose which levels are emailed.",
+        "operationId": "set_warning_area_api_sections__section_id__warning_areas__area_id__put",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          },
+          {
+            "name": "area_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Area Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WarningAreaPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarningAreaOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/weather": {
+      "get": {
+        "summary": "Weather Overview",
+        "description": "Forecasts for the section's places and current SMHI warnings for its areas (cached ~10 min).",
+        "operationId": "weather_overview_api_sections__section_id__weather_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherOverviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/weather/map": {
+      "get": {
+        "summary": "Weather Map",
+        "description": "SMHI forecasts for one town per county and the highest active warning per county (cached ~10 min).",
+        "operationId": "weather_map_api_weather_map_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherMapOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/energy": {
+      "get": {
+        "summary": "Energy Overview",
+        "description": "Spot prices for SE1-SE4, near-live production and flows, and nuclear status (cached 5-60 min).",
+        "operationId": "energy_overview_api_sections__section_id__energy_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyOverviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/energy/outlook": {
+      "get": {
+        "summary": "Energy Outlook",
+        "description": "Weekly price outlook from weather, wind and nuclear availability (written once per zone and day).",
+        "operationId": "energy_outlook_api_sections__section_id__energy_outlook_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyOutlookOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sections/{section_id}/watch-items": {
+      "get": {
+        "summary": "List Watch Items",
+        "operationId": "list_watch_items_api_sections__section_id__watch_items_get",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WatchItemOut"
+                  },
+                  "title": "Response List Watch Items Api Sections  Section Id  Watch Items Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Watch Item",
+        "operationId": "create_watch_item_api_sections__section_id__watch_items_post",
+        "parameters": [
+          {
+            "name": "section_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Section Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchItemIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WatchItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/watch-items/{item_id}": {
+      "patch": {
+        "summary": "Update Watch Item",
+        "operationId": "update_watch_item_api_watch_items__item_id__patch",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchItemPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WatchItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Watch Item",
+        "operationId": "delete_watch_item_api_watch_items__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles": {
+      "get": {
+        "summary": "List Articles",
+        "operationId": "list_articles_api_articles_get",
+        "parameters": [
+          {
+            "name": "section",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Section slug",
+              "title": "Section"
+            },
+            "description": "Section slug"
+          },
+          {
+            "name": "source_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only articles from this source (e.g. one region)",
+              "title": "Source Id"
+            },
+            "description": "Only articles from this source (e.g. one region)"
+          },
+          {
+            "name": "watched_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Watched Only"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 720,
+              "minimum": 1,
+              "default": 24,
+              "title": "Hours"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArticleOut"
+                  },
+                  "title": "Response List Articles Api Articles Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/briefs": {
+      "get": {
+        "summary": "List Briefs",
+        "operationId": "list_briefs_api_briefs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 14,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BriefOut"
+                  },
+                  "title": "Response List Briefs Api Briefs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/briefs/latest": {
+      "get": {
+        "summary": "Latest Brief",
+        "operationId": "latest_brief_api_briefs_latest_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/briefs/{day}": {
+      "get": {
+        "summary": "Get Brief",
+        "operationId": "get_brief_api_briefs__day__get",
+        "parameters": [
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/briefs/{day}/html": {
+      "get": {
+        "summary": "Get Brief Html",
+        "operationId": "get_brief_html_api_briefs__day__html_get",
+        "parameters": [
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/briefs/generate": {
+      "post": {
+        "summary": "Generate Brief",
+        "operationId": "generate_brief_api_briefs_generate_post",
+        "parameters": [
+          {
+            "name": "send",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Send"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts": {
+      "get": {
+        "summary": "List Alerts",
+        "description": "The viewer's own alerts; visitors see none when login is on.",
+        "operationId": "list_alerts_api_alerts_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertOut"
+                  },
+                  "title": "Response List Alerts Api Alerts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/ingest": {
+      "post": {
+        "summary": "Run Ingest",
+        "operationId": "run_ingest_api_jobs_ingest_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/alerts": {
+      "post": {
+        "summary": "Run Alerts",
+        "operationId": "run_alerts_api_jobs_alerts_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
     }
-   }
   },
-  "/api/briefs": {
-   "get": {
-    "summary": "List Briefs",
-    "operationId": "list_briefs_api_briefs_get",
-    "parameters": [
-     {
-      "name": "limit",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "integer",
-       "maximum": 365,
-       "minimum": 1,
-       "default": 14,
-       "title": "Limit"
+  "components": {
+    "schemas": {
+      "AlertOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "subject",
+          "body",
+          "created_at",
+          "sent_at"
+        ],
+        "title": "AlertOut"
+      },
+      "ArticleOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "section_id": {
+            "type": "integer",
+            "title": "Section Id"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          },
+          "importance": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Importance"
+          },
+          "importance_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Importance Reason"
+          },
+          "watched": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Watched"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "section_id",
+          "url",
+          "title",
+          "summary",
+          "published_at",
+          "importance",
+          "importance_reason"
+        ],
+        "title": "ArticleOut"
+      },
+      "AuthConfigOut": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "issuer": {
+            "type": "string",
+            "title": "Issuer"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "required_group": {
+            "type": "string",
+            "title": "Required Group"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "issuer",
+          "client_id",
+          "required_group",
+          "version"
+        ],
+        "title": "AuthConfigOut"
+      },
+      "BriefOut": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "generator": {
+            "type": "string",
+            "title": "Generator"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "generator",
+          "created_at",
+          "sent_at",
+          "data"
+        ],
+        "title": "BriefOut"
+      },
+      "ChartOut": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "range": {
+            "type": "string",
+            "title": "Range"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ChartPointOut"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "range",
+          "points"
+        ],
+        "title": "ChartOut"
+      },
+      "ChartPointOut": {
+        "properties": {
+          "t": {
+            "type": "string",
+            "format": "date-time",
+            "title": "T"
+          },
+          "close": {
+            "type": "number",
+            "title": "Close"
+          }
+        },
+        "type": "object",
+        "required": [
+          "t",
+          "close"
+        ],
+        "title": "ChartPointOut"
+      },
+      "DayForecastOut": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "min_temp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Temp"
+          },
+          "max_temp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Temp"
+          },
+          "precipitation": {
+            "type": "number",
+            "title": "Precipitation"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "symbol_text": {
+            "type": "string",
+            "title": "Symbol Text"
+          },
+          "max_wind": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Wind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "min_temp",
+          "max_temp",
+          "precipitation",
+          "symbol",
+          "symbol_text",
+          "max_wind"
+        ],
+        "title": "DayForecastOut"
+      },
+      "EnergyOutlookOut": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/OutlookDayOut"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "generator": {
+            "type": "string",
+            "title": "Generator"
+          },
+          "recent_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recent Price"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "days",
+          "headline",
+          "text",
+          "generator",
+          "recent_price",
+          "generated_at"
+        ],
+        "title": "EnergyOutlookOut"
+      },
+      "EnergyOverviewOut": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/ZonePricesOut"
+            },
+            "type": "array",
+            "title": "Zones"
+          },
+          "live": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiveOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reactors": {
+            "items": {
+              "$ref": "#/components/schemas/ReactorOut"
+            },
+            "type": "array",
+            "title": "Reactors"
+          },
+          "nuclear_available": {
+            "type": "number",
+            "title": "Nuclear Available"
+          },
+          "nuclear_capacity": {
+            "type": "integer",
+            "title": "Nuclear Capacity"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "zones",
+          "live",
+          "reactors",
+          "nuclear_available",
+          "nuclear_capacity",
+          "updated_at"
+        ],
+        "title": "EnergyOverviewOut"
+      },
+      "ForecastStepOut": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "hours": {
+            "type": "number",
+            "title": "Hours"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "symbol_text": {
+            "type": "string",
+            "title": "Symbol Text"
+          },
+          "precipitation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation"
+          },
+          "wind_speed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed"
+          },
+          "wind_gust": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Gust"
+          },
+          "wind_direction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Direction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time",
+          "hours",
+          "temperature",
+          "symbol",
+          "symbol_text",
+          "precipitation",
+          "wind_speed",
+          "wind_gust",
+          "wind_direction"
+        ],
+        "title": "ForecastStepOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LiveOut": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "production": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Production"
+          },
+          "load": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load"
+          },
+          "net_export": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Export"
+          },
+          "flows": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Flows"
+          },
+          "flows_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flows Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time",
+          "production",
+          "load",
+          "net_export",
+          "flows"
+        ],
+        "title": "LiveOut"
+      },
+      "MapRegionOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "place": {
+            "type": "string",
+            "title": "Place"
+          },
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          },
+          "warning_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning Level"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayForecastOut"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "place",
+          "lat",
+          "lon"
+        ],
+        "title": "MapRegionOut"
+      },
+      "MarketOverviewOut": {
+        "properties": {
+          "index": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StockRowOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stocks": {
+            "items": {
+              "$ref": "#/components/schemas/StockRowOut"
+            },
+            "type": "array",
+            "title": "Stocks"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "stocks",
+          "updated_at"
+        ],
+        "title": "MarketOverviewOut"
+      },
+      "MeOut": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "login_enabled": {
+            "type": "boolean",
+            "title": "Login Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "name",
+          "email",
+          "login_enabled"
+        ],
+        "title": "MeOut"
+      },
+      "OutlookDayOut": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "normal_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normal Temperature"
+          },
+          "wind": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind"
+          },
+          "nuclear_available": {
+            "type": "number",
+            "title": "Nuclear Available"
+          },
+          "nuclear_out": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nuclear Out"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high"
+            ],
+            "title": "Level"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "temperature",
+          "normal_temperature",
+          "wind",
+          "nuclear_available",
+          "nuclear_out",
+          "price",
+          "level",
+          "reasons"
+        ],
+        "title": "OutlookDayOut"
+      },
+      "PlaceForecastOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          },
+          "watch_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Watch Item Id"
+          },
+          "now": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastStepOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hours": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastStepOut"
+            },
+            "type": "array",
+            "title": "Hours"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayForecastOut"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "lat",
+          "lon"
+        ],
+        "title": "PlaceForecastOut"
+      },
+      "PricePointOut": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "price"
+        ],
+        "title": "PricePointOut"
+      },
+      "ReactorOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "available": {
+            "type": "number",
+            "title": "Available"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "default": ""
+          },
+          "back_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Back At"
+          },
+          "planned": {
+            "type": "boolean",
+            "title": "Planned",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "capacity",
+          "available"
+        ],
+        "title": "ReactorOut"
+      },
+      "RegionOut": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "covers": {
+            "type": "string",
+            "title": "Covers"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "covers",
+          "url"
+        ],
+        "title": "RegionOut"
+      },
+      "RegionPatch": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "RegionPatch"
+      },
+      "SectionIn": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,64}$",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position",
+            "default": 0
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "kind"
+        ],
+        "title": "SectionIn"
+      },
+      "SectionKindOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "item_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Item Types"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "description",
+          "item_types"
+        ],
+        "title": "SectionKindOut"
+      },
+      "SectionOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "kind",
+          "enabled",
+          "position",
+          "settings"
+        ],
+        "title": "SectionOut"
+      },
+      "SectionPatch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "title": "SectionPatch"
+      },
+      "SourceIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https?://",
+            "title": "Url"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "rss"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "url"
+        ],
+        "title": "SourceIn"
+      },
+      "SourceOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "section_id": {
+            "type": "integer",
+            "title": "Section Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "last_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Fetched At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "section_id",
+          "name",
+          "url",
+          "kind",
+          "enabled",
+          "last_fetched_at",
+          "last_error"
+        ],
+        "title": "SourceOut"
+      },
+      "SourcePatch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^https?://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "title": "SourcePatch"
+      },
+      "StockRowOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "watch_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Watch Item Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": ""
+          },
+          "last": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "returns": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Returns"
+          },
+          "high_52w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High 52W"
+          },
+          "low_52w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low 52W"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "turnover": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turnover"
+          },
+          "earnings_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earnings Date"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "spark": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Spark"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "symbol"
+        ],
+        "title": "StockRowOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WarningAreaOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "watch_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Watch Item Id"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Levels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind"
+        ],
+        "title": "WarningAreaOut"
+      },
+      "WarningAreaPatch": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "levels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "MESSAGE",
+                    "YELLOW",
+                    "ORANGE",
+                    "RED"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Levels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "WarningAreaPatch"
+      },
+      "WarningOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event"
+          },
+          "event_code": {
+            "type": "string",
+            "title": "Event Code"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "level_name": {
+            "type": "string",
+            "title": "Level Name"
+          },
+          "area_name": {
+            "type": "string",
+            "title": "Area Name"
+          },
+          "areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areas"
+          },
+          "alerting": {
+            "type": "boolean",
+            "title": "Alerting"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "published": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published"
+          },
+          "descriptions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Descriptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event",
+          "event_code",
+          "level",
+          "level_name",
+          "area_name",
+          "areas",
+          "alerting"
+        ],
+        "title": "WarningOut"
+      },
+      "WatchItemIn": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Keywords"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Settings"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "name"
+        ],
+        "title": "WatchItemIn"
+      },
+      "WatchItemOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "section_id": {
+            "type": "integer",
+            "title": "Section Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Keywords"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Settings"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "section_id",
+          "type",
+          "name",
+          "symbol",
+          "keywords",
+          "settings",
+          "enabled"
+        ],
+        "title": "WatchItemOut"
+      },
+      "WatchItemPatch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "keywords": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keywords"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "title": "WatchItemPatch"
+      },
+      "WeatherMapOut": {
+        "properties": {
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/MapRegionOut"
+            },
+            "type": "array",
+            "title": "Regions"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "regions",
+          "updated_at"
+        ],
+        "title": "WeatherMapOut"
+      },
+      "WeatherOverviewOut": {
+        "properties": {
+          "places": {
+            "items": {
+              "$ref": "#/components/schemas/PlaceForecastOut"
+            },
+            "type": "array",
+            "title": "Places"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/WarningOut"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "places",
+          "warnings",
+          "updated_at"
+        ],
+        "title": "WeatherOverviewOut"
+      },
+      "ZonePricesOut": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "now": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Now"
+          },
+          "today": {
+            "items": {
+              "$ref": "#/components/schemas/PricePointOut"
+            },
+            "type": "array",
+            "title": "Today"
+          },
+          "tomorrow": {
+            "items": {
+              "$ref": "#/components/schemas/PricePointOut"
+            },
+            "type": "array",
+            "title": "Tomorrow"
+          },
+          "avg_today": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Today"
+          },
+          "avg_tomorrow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Tomorrow"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "name"
+        ],
+        "title": "ZonePricesOut"
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/BriefOut"
-         },
-         "title": "Response List Briefs Api Briefs Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
     }
-   }
-  },
-  "/api/briefs/latest": {
-   "get": {
-    "summary": "Latest Brief",
-    "operationId": "latest_brief_api_briefs_latest_get",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BriefOut"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/briefs/{day}": {
-   "get": {
-    "summary": "Get Brief",
-    "operationId": "get_brief_api_briefs__day__get",
-    "parameters": [
-     {
-      "name": "day",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string",
-       "format": "date",
-       "title": "Day"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BriefOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/briefs/{day}/html": {
-   "get": {
-    "summary": "Get Brief Html",
-    "operationId": "get_brief_html_api_briefs__day__html_get",
-    "parameters": [
-     {
-      "name": "day",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string",
-       "format": "date",
-       "title": "Day"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "text/html": {
-        "schema": {
-         "type": "string"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/briefs/generate": {
-   "post": {
-    "summary": "Generate Brief",
-    "operationId": "generate_brief_api_briefs_generate_post",
-    "parameters": [
-     {
-      "name": "send",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "boolean",
-       "default": false,
-       "title": "Send"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BriefOut"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/alerts": {
-   "get": {
-    "summary": "List Alerts",
-    "operationId": "list_alerts_api_alerts_get",
-    "parameters": [
-     {
-      "name": "limit",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "integer",
-       "maximum": 500,
-       "minimum": 1,
-       "default": 50,
-       "title": "Limit"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "array",
-         "items": {
-          "$ref": "#/components/schemas/AlertOut"
-         },
-         "title": "Response List Alerts Api Alerts Get"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/jobs/ingest": {
-   "post": {
-    "summary": "Run Ingest",
-    "operationId": "run_ingest_api_jobs_ingest_post",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {}
-       }
-      }
-     }
-    }
-   }
-  },
-  "/api/jobs/alerts": {
-   "post": {
-    "summary": "Run Alerts",
-    "operationId": "run_alerts_api_jobs_alerts_post",
-    "responses": {
-     "200": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {}
-       }
-      }
-     }
-    }
-   }
   }
- },
- "components": {
-  "schemas": {
-   "AlertOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "subject": {
-      "type": "string",
-      "title": "Subject"
-     },
-     "body": {
-      "type": "string",
-      "title": "Body"
-     },
-     "created_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Created At"
-     },
-     "sent_at": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Sent At"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "kind",
-     "subject",
-     "body",
-     "created_at",
-     "sent_at"
-    ],
-    "title": "AlertOut"
-   },
-   "ArticleOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "section_id": {
-      "type": "integer",
-      "title": "Section Id"
-     },
-     "source_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Source Id"
-     },
-     "url": {
-      "type": "string",
-      "title": "Url"
-     },
-     "title": {
-      "type": "string",
-      "title": "Title"
-     },
-     "summary": {
-      "type": "string",
-      "title": "Summary"
-     },
-     "source": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Source"
-     },
-     "published_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Published At"
-     },
-     "importance": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Importance"
-     },
-     "importance_reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Importance Reason"
-     },
-     "watched": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Watched"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "section_id",
-     "url",
-     "title",
-     "summary",
-     "published_at",
-     "importance",
-     "importance_reason"
-    ],
-    "title": "ArticleOut"
-   },
-   "BriefOut": {
-    "properties": {
-     "date": {
-      "type": "string",
-      "format": "date",
-      "title": "Date"
-     },
-     "generator": {
-      "type": "string",
-      "title": "Generator"
-     },
-     "created_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Created At"
-     },
-     "sent_at": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Sent At"
-     },
-     "data": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Data"
-     }
-    },
-    "type": "object",
-    "required": [
-     "date",
-     "generator",
-     "created_at",
-     "sent_at",
-     "data"
-    ],
-    "title": "BriefOut"
-   },
-   "ChartOut": {
-    "properties": {
-     "symbol": {
-      "type": "string",
-      "title": "Symbol"
-     },
-     "range": {
-      "type": "string",
-      "title": "Range"
-     },
-     "points": {
-      "items": {
-       "$ref": "#/components/schemas/ChartPointOut"
-      },
-      "type": "array",
-      "title": "Points"
-     }
-    },
-    "type": "object",
-    "required": [
-     "symbol",
-     "range",
-     "points"
-    ],
-    "title": "ChartOut"
-   },
-   "ChartPointOut": {
-    "properties": {
-     "t": {
-      "type": "string",
-      "format": "date-time",
-      "title": "T"
-     },
-     "close": {
-      "type": "number",
-      "title": "Close"
-     }
-    },
-    "type": "object",
-    "required": [
-     "t",
-     "close"
-    ],
-    "title": "ChartPointOut"
-   },
-   "DayForecastOut": {
-    "properties": {
-     "date": {
-      "type": "string",
-      "format": "date",
-      "title": "Date"
-     },
-     "min_temp": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Min Temp"
-     },
-     "max_temp": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Max Temp"
-     },
-     "precipitation": {
-      "type": "number",
-      "title": "Precipitation"
-     },
-     "symbol": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Symbol"
-     },
-     "symbol_text": {
-      "type": "string",
-      "title": "Symbol Text"
-     },
-     "max_wind": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Max Wind"
-     }
-    },
-    "type": "object",
-    "required": [
-     "date",
-     "min_temp",
-     "max_temp",
-     "precipitation",
-     "symbol",
-     "symbol_text",
-     "max_wind"
-    ],
-    "title": "DayForecastOut"
-   },
-   "EnergyOutlookOut": {
-    "properties": {
-     "zone": {
-      "type": "string",
-      "title": "Zone"
-     },
-     "days": {
-      "items": {
-       "$ref": "#/components/schemas/OutlookDayOut"
-      },
-      "type": "array",
-      "title": "Days"
-     },
-     "headline": {
-      "type": "string",
-      "title": "Headline"
-     },
-     "text": {
-      "type": "string",
-      "title": "Text"
-     },
-     "generator": {
-      "type": "string",
-      "title": "Generator"
-     },
-     "recent_price": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Recent Price"
-     },
-     "generated_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Generated At"
-     },
-     "errors": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Errors"
-     }
-    },
-    "type": "object",
-    "required": [
-     "zone",
-     "days",
-     "headline",
-     "text",
-     "generator",
-     "recent_price",
-     "generated_at"
-    ],
-    "title": "EnergyOutlookOut"
-   },
-   "EnergyOverviewOut": {
-    "properties": {
-     "zone": {
-      "type": "string",
-      "title": "Zone"
-     },
-     "zones": {
-      "items": {
-       "$ref": "#/components/schemas/ZonePricesOut"
-      },
-      "type": "array",
-      "title": "Zones"
-     },
-     "live": {
-      "anyOf": [
-       {
-        "$ref": "#/components/schemas/LiveOut"
-       },
-       {
-        "type": "null"
-       }
-      ]
-     },
-     "reactors": {
-      "items": {
-       "$ref": "#/components/schemas/ReactorOut"
-      },
-      "type": "array",
-      "title": "Reactors"
-     },
-     "nuclear_available": {
-      "type": "number",
-      "title": "Nuclear Available"
-     },
-     "nuclear_capacity": {
-      "type": "integer",
-      "title": "Nuclear Capacity"
-     },
-     "updated_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Updated At"
-     },
-     "errors": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Errors"
-     }
-    },
-    "type": "object",
-    "required": [
-     "zone",
-     "zones",
-     "live",
-     "reactors",
-     "nuclear_available",
-     "nuclear_capacity",
-     "updated_at"
-    ],
-    "title": "EnergyOverviewOut"
-   },
-   "ForecastStepOut": {
-    "properties": {
-     "time": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Time"
-     },
-     "hours": {
-      "type": "number",
-      "title": "Hours"
-     },
-     "temperature": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temperature"
-     },
-     "symbol": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Symbol"
-     },
-     "symbol_text": {
-      "type": "string",
-      "title": "Symbol Text"
-     },
-     "precipitation": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Precipitation"
-     },
-     "wind_speed": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Wind Speed"
-     },
-     "wind_gust": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Wind Gust"
-     },
-     "wind_direction": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Wind Direction"
-     }
-    },
-    "type": "object",
-    "required": [
-     "time",
-     "hours",
-     "temperature",
-     "symbol",
-     "symbol_text",
-     "precipitation",
-     "wind_speed",
-     "wind_gust",
-     "wind_direction"
-    ],
-    "title": "ForecastStepOut"
-   },
-   "HTTPValidationError": {
-    "properties": {
-     "detail": {
-      "items": {
-       "$ref": "#/components/schemas/ValidationError"
-      },
-      "type": "array",
-      "title": "Detail"
-     }
-    },
-    "type": "object",
-    "title": "HTTPValidationError"
-   },
-   "LiveOut": {
-    "properties": {
-     "time": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Time"
-     },
-     "production": {
-      "additionalProperties": {
-       "type": "number"
-      },
-      "type": "object",
-      "title": "Production"
-     },
-     "load": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Load"
-     },
-     "net_export": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Net Export"
-     },
-     "flows": {
-      "additionalProperties": {
-       "type": "number"
-      },
-      "type": "object",
-      "title": "Flows"
-     },
-     "flows_time": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Flows Time"
-     }
-    },
-    "type": "object",
-    "required": [
-     "time",
-     "production",
-     "load",
-     "net_export",
-     "flows"
-    ],
-    "title": "LiveOut"
-   },
-   "MapRegionOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "place": {
-      "type": "string",
-      "title": "Place"
-     },
-     "lat": {
-      "type": "number",
-      "title": "Lat"
-     },
-     "lon": {
-      "type": "number",
-      "title": "Lon"
-     },
-     "warning_level": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Warning Level"
-     },
-     "steps": {
-      "items": {
-       "$ref": "#/components/schemas/ForecastStepOut"
-      },
-      "type": "array",
-      "title": "Steps"
-     },
-     "days": {
-      "items": {
-       "$ref": "#/components/schemas/DayForecastOut"
-      },
-      "type": "array",
-      "title": "Days"
-     },
-     "error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "name",
-     "place",
-     "lat",
-     "lon"
-    ],
-    "title": "MapRegionOut"
-   },
-   "MarketOverviewOut": {
-    "properties": {
-     "index": {
-      "anyOf": [
-       {
-        "$ref": "#/components/schemas/StockRowOut"
-       },
-       {
-        "type": "null"
-       }
-      ]
-     },
-     "stocks": {
-      "items": {
-       "$ref": "#/components/schemas/StockRowOut"
-      },
-      "type": "array",
-      "title": "Stocks"
-     },
-     "updated_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Updated At"
-     }
-    },
-    "type": "object",
-    "required": [
-     "index",
-     "stocks",
-     "updated_at"
-    ],
-    "title": "MarketOverviewOut"
-   },
-   "OutlookDayOut": {
-    "properties": {
-     "date": {
-      "type": "string",
-      "format": "date",
-      "title": "Date"
-     },
-     "temperature": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temperature"
-     },
-     "normal_temperature": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Normal Temperature"
-     },
-     "wind": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Wind"
-     },
-     "nuclear_available": {
-      "type": "number",
-      "title": "Nuclear Available"
-     },
-     "nuclear_out": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Nuclear Out"
-     },
-     "price": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Price"
-     },
-     "level": {
-      "type": "string",
-      "enum": [
-       "low",
-       "normal",
-       "high"
-      ],
-      "title": "Level"
-     },
-     "reasons": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Reasons"
-     }
-    },
-    "type": "object",
-    "required": [
-     "date",
-     "temperature",
-     "normal_temperature",
-     "wind",
-     "nuclear_available",
-     "nuclear_out",
-     "price",
-     "level",
-     "reasons"
-    ],
-    "title": "OutlookDayOut"
-   },
-   "PlaceForecastOut": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "lat": {
-      "type": "number",
-      "title": "Lat"
-     },
-     "lon": {
-      "type": "number",
-      "title": "Lon"
-     },
-     "watch_item_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Watch Item Id"
-     },
-     "now": {
-      "anyOf": [
-       {
-        "$ref": "#/components/schemas/ForecastStepOut"
-       },
-       {
-        "type": "null"
-       }
-      ]
-     },
-     "hours": {
-      "items": {
-       "$ref": "#/components/schemas/ForecastStepOut"
-      },
-      "type": "array",
-      "title": "Hours"
-     },
-     "days": {
-      "items": {
-       "$ref": "#/components/schemas/DayForecastOut"
-      },
-      "type": "array",
-      "title": "Days"
-     },
-     "error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "name",
-     "lat",
-     "lon"
-    ],
-    "title": "PlaceForecastOut"
-   },
-   "PricePointOut": {
-    "properties": {
-     "start": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Start"
-     },
-     "price": {
-      "type": "number",
-      "title": "Price"
-     }
-    },
-    "type": "object",
-    "required": [
-     "start",
-     "price"
-    ],
-    "title": "PricePointOut"
-   },
-   "ReactorOut": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "capacity": {
-      "type": "integer",
-      "title": "Capacity"
-     },
-     "available": {
-      "type": "number",
-      "title": "Available"
-     },
-     "reason": {
-      "type": "string",
-      "title": "Reason",
-      "default": ""
-     },
-     "back_at": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Back At"
-     },
-     "planned": {
-      "type": "boolean",
-      "title": "Planned",
-      "default": true
-     }
-    },
-    "type": "object",
-    "required": [
-     "name",
-     "capacity",
-     "available"
-    ],
-    "title": "ReactorOut"
-   },
-   "RegionOut": {
-    "properties": {
-     "slug": {
-      "type": "string",
-      "title": "Slug"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "covers": {
-      "type": "string",
-      "title": "Covers"
-     },
-     "url": {
-      "type": "string",
-      "title": "Url"
-     },
-     "source_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Source Id"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled",
-      "default": false
-     }
-    },
-    "type": "object",
-    "required": [
-     "slug",
-     "name",
-     "covers",
-     "url"
-    ],
-    "title": "RegionOut"
-   },
-   "RegionPatch": {
-    "properties": {
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled"
-     }
-    },
-    "type": "object",
-    "required": [
-     "enabled"
-    ],
-    "title": "RegionPatch"
-   },
-   "SectionIn": {
-    "properties": {
-     "slug": {
-      "type": "string",
-      "pattern": "^[a-z0-9-]{1,64}$",
-      "title": "Slug"
-     },
-     "name": {
-      "type": "string",
-      "maxLength": 128,
-      "minLength": 1,
-      "title": "Name"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled",
-      "default": true
-     },
-     "position": {
-      "type": "integer",
-      "title": "Position",
-      "default": 0
-     },
-     "settings": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Settings"
-     }
-    },
-    "type": "object",
-    "required": [
-     "slug",
-     "name",
-     "kind"
-    ],
-    "title": "SectionIn"
-   },
-   "SectionKindOut": {
-    "properties": {
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "description": {
-      "type": "string",
-      "title": "Description"
-     },
-     "item_types": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Item Types"
-     }
-    },
-    "type": "object",
-    "required": [
-     "kind",
-     "description",
-     "item_types"
-    ],
-    "title": "SectionKindOut"
-   },
-   "SectionOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "slug": {
-      "type": "string",
-      "title": "Slug"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled"
-     },
-     "position": {
-      "type": "integer",
-      "title": "Position"
-     },
-     "settings": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Settings"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "slug",
-     "name",
-     "kind",
-     "enabled",
-     "position",
-     "settings"
-    ],
-    "title": "SectionOut"
-   },
-   "SectionPatch": {
-    "properties": {
-     "name": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Name"
-     },
-     "enabled": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Enabled"
-     },
-     "position": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Position"
-     },
-     "settings": {
-      "anyOf": [
-       {
-        "additionalProperties": true,
-        "type": "object"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Settings"
-     }
-    },
-    "type": "object",
-    "title": "SectionPatch"
-   },
-   "SourceIn": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "maxLength": 128,
-      "minLength": 1,
-      "title": "Name"
-     },
-     "url": {
-      "type": "string",
-      "pattern": "^https?://",
-      "title": "Url"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind",
-      "default": "rss"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled",
-      "default": true
-     }
-    },
-    "type": "object",
-    "required": [
-     "name",
-     "url"
-    ],
-    "title": "SourceIn"
-   },
-   "SourceOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "section_id": {
-      "type": "integer",
-      "title": "Section Id"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "url": {
-      "type": "string",
-      "title": "Url"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled"
-     },
-     "last_fetched_at": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Last Fetched At"
-     },
-     "last_error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Last Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "section_id",
-     "name",
-     "url",
-     "kind",
-     "enabled",
-     "last_fetched_at",
-     "last_error"
-    ],
-    "title": "SourceOut"
-   },
-   "SourcePatch": {
-    "properties": {
-     "name": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Name"
-     },
-     "url": {
-      "anyOf": [
-       {
-        "type": "string",
-        "pattern": "^https?://"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Url"
-     },
-     "enabled": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Enabled"
-     }
-    },
-    "type": "object",
-    "title": "SourcePatch"
-   },
-   "StockRowOut": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "symbol": {
-      "type": "string",
-      "title": "Symbol"
-     },
-     "watch_item_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Watch Item Id"
-     },
-     "currency": {
-      "type": "string",
-      "title": "Currency",
-      "default": ""
-     },
-     "last": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Last"
-     },
-     "change": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Change"
-     },
-     "change_pct": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Change Pct"
-     },
-     "returns": {
-      "additionalProperties": {
-       "anyOf": [
-        {
-         "type": "number"
-        },
-        {
-         "type": "null"
-        }
-       ]
-      },
-      "type": "object",
-      "title": "Returns"
-     },
-     "high_52w": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "High 52W"
-     },
-     "low_52w": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Low 52W"
-     },
-     "volume": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Volume"
-     },
-     "turnover": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Turnover"
-     },
-     "earnings_date": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Earnings Date"
-     },
-     "as_of": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "As Of"
-     },
-     "spark": {
-      "items": {
-       "type": "number"
-      },
-      "type": "array",
-      "title": "Spark"
-     },
-     "error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "name",
-     "symbol"
-    ],
-    "title": "StockRowOut"
-   },
-   "ValidationError": {
-    "properties": {
-     "loc": {
-      "items": {
-       "anyOf": [
-        {
-         "type": "string"
-        },
-        {
-         "type": "integer"
-        }
-       ]
-      },
-      "type": "array",
-      "title": "Location"
-     },
-     "msg": {
-      "type": "string",
-      "title": "Message"
-     },
-     "type": {
-      "type": "string",
-      "title": "Error Type"
-     },
-     "input": {
-      "title": "Input"
-     },
-     "ctx": {
-      "type": "object",
-      "title": "Context"
-     }
-    },
-    "type": "object",
-    "required": [
-     "loc",
-     "msg",
-     "type"
-    ],
-    "title": "ValidationError"
-   },
-   "WarningAreaOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "kind": {
-      "type": "string",
-      "title": "Kind"
-     },
-     "watch_item_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Watch Item Id"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled",
-      "default": false
-     },
-     "levels": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Levels"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "name",
-     "kind"
-    ],
-    "title": "WarningAreaOut"
-   },
-   "WarningAreaPatch": {
-    "properties": {
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled"
-     },
-     "levels": {
-      "anyOf": [
-       {
-        "items": {
-         "type": "string",
-         "enum": [
-          "MESSAGE",
-          "YELLOW",
-          "ORANGE",
-          "RED"
-         ]
-        },
-        "type": "array"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Levels"
-     }
-    },
-    "type": "object",
-    "required": [
-     "enabled"
-    ],
-    "title": "WarningAreaPatch"
-   },
-   "WarningOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "event": {
-      "type": "string",
-      "title": "Event"
-     },
-     "event_code": {
-      "type": "string",
-      "title": "Event Code"
-     },
-     "level": {
-      "type": "string",
-      "title": "Level"
-     },
-     "level_name": {
-      "type": "string",
-      "title": "Level Name"
-     },
-     "area_name": {
-      "type": "string",
-      "title": "Area Name"
-     },
-     "areas": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Areas"
-     },
-     "alerting": {
-      "type": "boolean",
-      "title": "Alerting"
-     },
-     "start": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Start"
-     },
-     "end": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "End"
-     },
-     "published": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date-time"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Published"
-     },
-     "descriptions": {
-      "additionalProperties": {
-       "type": "string"
-      },
-      "type": "object",
-      "title": "Descriptions"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "event",
-     "event_code",
-     "level",
-     "level_name",
-     "area_name",
-     "areas",
-     "alerting"
-    ],
-    "title": "WarningOut"
-   },
-   "WatchItemIn": {
-    "properties": {
-     "type": {
-      "type": "string",
-      "title": "Type"
-     },
-     "name": {
-      "type": "string",
-      "maxLength": 128,
-      "minLength": 1,
-      "title": "Name"
-     },
-     "symbol": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Symbol"
-     },
-     "keywords": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Keywords"
-     },
-     "settings": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Settings"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled",
-      "default": true
-     }
-    },
-    "type": "object",
-    "required": [
-     "type",
-     "name"
-    ],
-    "title": "WatchItemIn"
-   },
-   "WatchItemOut": {
-    "properties": {
-     "id": {
-      "type": "integer",
-      "title": "Id"
-     },
-     "section_id": {
-      "type": "integer",
-      "title": "Section Id"
-     },
-     "type": {
-      "type": "string",
-      "title": "Type"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "symbol": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Symbol"
-     },
-     "keywords": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "title": "Keywords"
-     },
-     "settings": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Settings"
-     },
-     "enabled": {
-      "type": "boolean",
-      "title": "Enabled"
-     }
-    },
-    "type": "object",
-    "required": [
-     "id",
-     "section_id",
-     "type",
-     "name",
-     "symbol",
-     "keywords",
-     "settings",
-     "enabled"
-    ],
-    "title": "WatchItemOut"
-   },
-   "WatchItemPatch": {
-    "properties": {
-     "name": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Name"
-     },
-     "symbol": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Symbol"
-     },
-     "keywords": {
-      "anyOf": [
-       {
-        "items": {
-         "type": "string"
-        },
-        "type": "array"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Keywords"
-     },
-     "settings": {
-      "anyOf": [
-       {
-        "additionalProperties": true,
-        "type": "object"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Settings"
-     },
-     "enabled": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Enabled"
-     }
-    },
-    "type": "object",
-    "title": "WatchItemPatch"
-   },
-   "WeatherMapOut": {
-    "properties": {
-     "regions": {
-      "items": {
-       "$ref": "#/components/schemas/MapRegionOut"
-      },
-      "type": "array",
-      "title": "Regions"
-     },
-     "updated_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Updated At"
-     },
-     "error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "regions",
-     "updated_at"
-    ],
-    "title": "WeatherMapOut"
-   },
-   "WeatherOverviewOut": {
-    "properties": {
-     "places": {
-      "items": {
-       "$ref": "#/components/schemas/PlaceForecastOut"
-      },
-      "type": "array",
-      "title": "Places"
-     },
-     "warnings": {
-      "items": {
-       "$ref": "#/components/schemas/WarningOut"
-      },
-      "type": "array",
-      "title": "Warnings"
-     },
-     "updated_at": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Updated At"
-     },
-     "error": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Error"
-     }
-    },
-    "type": "object",
-    "required": [
-     "places",
-     "warnings",
-     "updated_at"
-    ],
-    "title": "WeatherOverviewOut"
-   },
-   "ZonePricesOut": {
-    "properties": {
-     "zone": {
-      "type": "string",
-      "title": "Zone"
-     },
-     "name": {
-      "type": "string",
-      "title": "Name"
-     },
-     "now": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Now"
-     },
-     "today": {
-      "items": {
-       "$ref": "#/components/schemas/PricePointOut"
-      },
-      "type": "array",
-      "title": "Today"
-     },
-     "tomorrow": {
-      "items": {
-       "$ref": "#/components/schemas/PricePointOut"
-      },
-      "type": "array",
-      "title": "Tomorrow"
-     },
-     "avg_today": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Avg Today"
-     },
-     "avg_tomorrow": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Avg Tomorrow"
-     }
-    },
-    "type": "object",
-    "required": [
-     "zone",
-     "name"
-    ],
-    "title": "ZonePricesOut"
-   }
-  }
- }
 }

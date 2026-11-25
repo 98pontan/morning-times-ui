@@ -1,6 +1,7 @@
 import { Link, useParams, useSearchParams } from "react-router";
 import type { Section } from "../api/client";
 import { useArticles, useRegionMutation, useRegions, useSections } from "../api/hooks";
+import { useAuth } from "../auth/auth";
 import { ArticleList } from "../components/ArticleList";
 import { ErrorBox, Loading } from "../components/Layout";
 import { EnergyScreen } from "../components/EnergyScreen";
@@ -73,6 +74,7 @@ export function SectionPage() {
 function RegionBar(props: { section: Section; sourceId?: number; onSelect: (sourceId: number | null) => void }) {
   const regions = useRegions(props.section.id);
   const setRegion = useRegionMutation(props.section.id);
+  const auth = useAuth();
   if (!regions.data) return regions.error ? <ErrorBox error={regions.error} /> : null;
 
   const picked = regions.data.filter((r) => r.enabled);
@@ -100,7 +102,7 @@ function RegionBar(props: { section: Section; sourceId?: number; onSelect: (sour
             {r.name}
           </button>
         ))}
-        {others.length > 0 && (
+        {others.length > 0 && auth.canEdit && (
           <select
             aria-label="Lägg till region"
             value=""

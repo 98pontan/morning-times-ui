@@ -3,11 +3,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import { AuthProvider } from "./auth/auth";
 import { Layout } from "./components/Layout";
+import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { BriefPage, BriefsPage } from "./pages/BriefsPage";
 import { SectionPage } from "./pages/SectionPage";
 import { SectionSettingsPage } from "./pages/settings/SectionSettingsPage";
-import { SettingsPage } from "./pages/settings/SettingsPage";
+import { RequireEditor, SettingsPage } from "./pages/settings/SettingsPage";
 import { TodayPage } from "./pages/TodayPage";
 import "./styles.css";
 
@@ -24,8 +26,9 @@ const router = createBrowserRouter([
       { path: "s/:slug", element: <SectionPage /> },
       { path: "briefs", element: <BriefsPage /> },
       { path: "briefs/:day", element: <BriefPage /> },
-      { path: "settings", element: <SettingsPage /> },
-      { path: "settings/sections/:id", element: <SectionSettingsPage /> },
+      { path: "settings", element: <RequireEditor><SettingsPage /></RequireEditor> },
+      { path: "settings/sections/:id", element: <RequireEditor><SectionSettingsPage /></RequireEditor> },
+      { path: "auth/callback", element: <AuthCallbackPage /> },
     ],
   },
 ]);
@@ -33,7 +36,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

@@ -1,5 +1,6 @@
 // Typed client for the morning-times backend. Types come from src/api/schema.d.ts,
 // generated from the backend's OpenAPI schema with `npm run api:types`.
+import { accessToken, forgetUser, renew } from "../auth/auth";
 import type { components } from "./schema";
 
 type Schemas = components["schemas"];
@@ -97,11 +98,29 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`/api${path}`, {
+export interface Me {
+  username: string;
+  name: string;
+  email: string | null;
+  login_enabled: boolean;
+}
+
+async function send(path: string, init: RequestInit, token: string | null) {
+  return fetch(`/api${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...init.headers },
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...init.headers },
   });
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = await accessToken();
+  let response = await send(path, init, token);
+  if (response.status === 401 && token) {
+    // Expired or revoked: renew once, else continue as a visitor.
+    const user = await renew();
+    if (user) response = await send(path, init, user.access_token);
+    else await forgetUser();
+  }
   if (!response.ok) {
     let message = `${response.status} ${response.statusText}`;
     try {
@@ -120,6 +139,7 @@ const json = (method: string, body?: unknown): RequestInit => ({ method, body: J
 
 export const api = {
   config: () => request<AppConfig>("/config"),
+  me: () => request<Me>("/me"),
   sectionKinds: () => request<SectionKind[]>("/section-kinds"),
 
   sections: () => request<Section[]>("/sections"),
