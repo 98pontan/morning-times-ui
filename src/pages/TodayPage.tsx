@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useAlerts, useArticles, useBrief, useJobs } from "../api/hooks";
+import { useAuth } from "../auth/auth";
 import { ArticleList } from "../components/ArticleList";
 import { BriefView } from "../components/BriefView";
 import { ErrorBox, Loading } from "../components/Layout";
@@ -10,6 +11,7 @@ export function TodayPage() {
   const alerts = useAlerts();
   const watched = useArticles({ watchedOnly: true, hours: 24 });
   const jobs = useJobs();
+  const auth = useAuth();
 
   return (
     <div className="two-columns">
@@ -20,9 +22,11 @@ export function TodayPage() {
           <div className="empty">
             <h1>Ingen morgonbrief än</h1>
             <p>Den skapas automatiskt varje morgon. Du kan också skapa en nu från de senaste nyheterna.</p>
-            <button onClick={() => jobs.brief.mutate()} disabled={jobs.brief.isPending}>
-              {jobs.brief.isPending ? "Skriver…" : "Skapa dagens brief"}
-            </button>
+            {auth.canEdit && (
+              <button onClick={() => jobs.brief.mutate()} disabled={jobs.brief.isPending}>
+                {jobs.brief.isPending ? "Skriver…" : "Skapa dagens brief"}
+              </button>
+            )}
             {jobs.brief.error && <ErrorBox error={jobs.brief.error} />}
           </div>
         )}
@@ -31,7 +35,16 @@ export function TodayPage() {
 
       <aside className="sidebar">
         <h2 className="sidebar-title">Bevakningar</h2>
-        {alerts.data?.length === 0 && <p className="muted">Inga larm.</p>}
+        {auth.enabled && !auth.user ? (
+          <p className="muted">
+            <button className="link" onClick={() => auth.login()}>
+              Logga in
+            </button>{" "}
+            för att se dina larm och följa egna aktier, lag och platser.
+          </p>
+        ) : (
+          alerts.data?.length === 0 && <p className="muted">Inga larm.</p>
+        )}
         <ul className="alerts">
           {alerts.data?.map((a) => (
             <li key={a.id}>

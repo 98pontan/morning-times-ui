@@ -59,6 +59,12 @@ podman run -p 8080:8080 -e BACKEND_URL=http://host.containers.internal:8080 morn
 
 ## Security
 
-The backend API has no login yet. Anyone who can reach the UI can change the configuration and
-trigger jobs, so keep it on your private network (see `platform-apps/TODO.txt` in rke2-gitops
-about Tailscale) until authentication is added.
+Login is with Keycloak (Authorization Code + PKCE, `oidc-client-ts`) when the backend has
+`auth.enabled`. The UI reads the realm and client from `GET /api/auth` and sends the access token to
+the API. Visitors can read everything except settings; the backend enforces who may change what,
+the UI only hides the controls. Keep the site on the private network anyway (Tailscale).
+
+## Versions
+
+See `CHANGELOG.md`. The footer shows the version from `package.json`, plus the backend's version
+(from `/api/auth`) when the two differ.

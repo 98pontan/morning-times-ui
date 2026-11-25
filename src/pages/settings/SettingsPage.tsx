@@ -1,11 +1,26 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router";
 import type { Section, SectionIn } from "../../api/client";
 import { useConfig, useJobs, useSectionKinds, useSectionMutations, useSections } from "../../api/hooks";
+import { LoginPrompt, useAuth } from "../../auth/auth";
 import { ErrorBox, Loading } from "../../components/Layout";
 import { shortDateTime } from "../../lib/format";
 
 const JOB_NAMES: Record<string, string> = { ingest: "Hämta nyheter", alerts: "Kolla bevakningar", brief: "Morgonbrief" };
+
+/** Settings are only for logged-in users when login is on. */
+export function RequireEditor({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  if (!auth.ready) return <Loading />;
+  if (!auth.canEdit)
+    return (
+      <div className="settings">
+        <h1 className="section-title">Inställningar</h1>
+        <LoginPrompt />
+      </div>
+    );
+  return <>{children}</>;
+}
 
 export function SettingsPage() {
   return (

@@ -21,6 +21,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Auth Config
+         * @description What the UI needs to log in (public).
+         */
+        get: operations["auth_config_api_auth_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Me
+         * @description The logged-in user, or 401 (the UI uses this to check its token).
+         */
+        get: operations["me_api_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/config": {
         parameters: {
             query?: never;
@@ -311,7 +351,7 @@ export interface paths {
         };
         /**
          * Energy Outlook
-         * @description Weekly price outlook from weather, wind and nuclear availability (text cached ~3 h).
+         * @description Weekly price outlook from weather, wind and nuclear availability (written once per zone and day).
          */
         get: operations["energy_outlook_api_sections__section_id__energy_outlook_get"];
         put?: never;
@@ -467,7 +507,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Alerts */
+        /**
+         * List Alerts
+         * @description The viewer's own alerts; visitors see none when login is on.
+         */
         get: operations["list_alerts_api_alerts_get"];
         put?: never;
         post?: never;
@@ -560,6 +603,19 @@ export interface components {
             importance_reason: string | null;
             /** Watched */
             watched?: string[];
+        };
+        /** AuthConfigOut */
+        AuthConfigOut: {
+            /** Enabled */
+            enabled: boolean;
+            /** Issuer */
+            issuer: string;
+            /** Client Id */
+            client_id: string;
+            /** Required Group */
+            required_group: string;
+            /** Version */
+            version: string;
         };
         /** BriefOut */
         BriefOut: {
@@ -746,6 +802,17 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** MeOut */
+        MeOut: {
+            /** Username */
+            username: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string | null;
+            /** Login Enabled */
+            login_enabled: boolean;
         };
         /** OutlookDayOut */
         OutlookDayOut: {
@@ -1186,6 +1253,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    auth_config_api_auth_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthConfigOut"];
+                };
+            };
+        };
+    };
+    me_api_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeOut"];
                 };
             };
         };
